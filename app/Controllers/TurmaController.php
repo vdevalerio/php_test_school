@@ -3,14 +3,13 @@
 namespace App\Controllers;
 
 use App\Core\Database;
+use App\Models\Turma;
 
 class TurmaController
 {
     public function index()
     {
-        $db = new Database();
-
-        $turmas = $db->query("SELECT * FROM turmas")->fetchAll();
+        $turmas = Turma::all();
 
         $heading = 'Turmas';
         require "../app/Views/turmas/index.php";
@@ -34,12 +33,11 @@ class TurmaController
             header('Location: /turmas?error=campos_obrigatorios');
             exit;
         }
-
-        $db = new Database();
-        $db->query(
-            "INSERT INTO turmas (nome, ano) VALUES (?, ?)",
-            [$nome, $ano]
-        );
+        
+        Turma::create([
+            'nome' => $nome,
+            'ano' => $ano
+        ]);
 
         header('Location: /turmas');
         exit;
