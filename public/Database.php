@@ -3,22 +3,21 @@
 class Database {
     private ?PDO $connection;
     
-    public function __construct(array $envs) {
-        $data_source_name = sprintf(
-            "mysql:host=%s;port=%s;user=%s;password=%s;dbname=%s;charset=utf8mb4", 
-            $envs['DB_HOST'], 
-            $envs['DB_PORT'], 
-            $envs['DB_USERNAME'], 
-            $envs['DB_PASSWORD'], 
-            $envs['DB_DATABASE']
+    public function __construct(array $config) {
+        $data_source_name = "mysql:" . http_build_query($config, '', ';');
+        $this->connection = new PDO(
+            $dsn = $data_source_name,
+            $username = $config['user'] ?? '',
+            $password = $config['password'] ?? '',
+            $options = [
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
         );
-        $this->connection = new PDO($data_source_name);
     }
 
     public function query($query) {
         $statement = $this->connection->prepare($query);
         $statement->execute();
         return $statement;
-        
     }
 }
