@@ -1,10 +1,5 @@
 <?php
 
-require_once '../vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
-
 return [
     'host' => $_ENV['DB_HOST'],
     'port' => $_ENV['DB_PORT'],

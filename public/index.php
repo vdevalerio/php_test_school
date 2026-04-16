@@ -1,13 +1,9 @@
 <?php
 
-require "helpers.php";
-#require "router.php";
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/helpers.php';
 
-require_once 'Database.php';
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
-$config = require '../config/database.php';
-
-$db = new Database($config);
-$turmas = $db->query("SELECT * FROM turmas");
-
-dd($turmas);
+require_once __DIR__ . '/../routes/web.php';
