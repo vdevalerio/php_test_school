@@ -14,10 +14,23 @@ include '../app/Views/layout/banner.php';
     'fetchUrl' => '/turmas/create',
 ]) ?>
 
-<ul>
-    <?php foreach ($turmas as $turma): ?>
-        <li><?php echo $turma['nome']; ?> - <?php echo $turma['ano']; ?></li>
-    <?php endforeach; ?>
-</ul>
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Ano</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($turmas as $turma): ?>
+            <tr>
+                <td><?php echo $turma['id']; ?></td>
+                <td><?php echo $turma['nome']; ?></td>
+                <td><?php echo $turma['ano']; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
 
 <?php include '../app/Views/layout/footer.php'; ?>
