@@ -1,4 +1,7 @@
-<span class="close" onclick="document.getElementById('criarTurmaModal').style.display='none'">&times;</span>
+<span class="close" 
+    onclick="this.closest('.modal').style.display='none';
+    document.body.style.overflow=''">&times;
+</span>
 
 <form action="<?= $action ?>" method="POST">
     <input type="hidden" name="_method" value="<?= $method ?>">

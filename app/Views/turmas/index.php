@@ -7,11 +7,12 @@ include '../app/Views/layout/banner.php';
 
 ?>
 
-<button id="criarTurmaBtn">Criar Turma</button>
-<div id="criarTurmaModal" class="modal">
-    <div class="modal-content">
-    </div>
-</div>
+<?php component('modal-trigger', [
+    'id'       => 'criarTurma',
+    'label'    => 'Criar Turma',
+    'variant'  => 'primary',
+    'fetchUrl' => '/turmas/create',
+]) ?>
 
 <ul>
     <?php foreach ($turmas as $turma): ?>
