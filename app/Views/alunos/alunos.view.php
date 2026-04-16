@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alunos</title>
-</head>
-<body>
+<?php 
 
-    <?php include '../app/Views/layout/nav.php'; ?>
-    <?php include '../app/Views/layout/banner.php'; ?>
+include '../app/Views/layout/header.php';
 
-</body>
-</html>
+include '../app/Views/layout/nav.php';
+include '../app/Views/layout/banner.php';
+
+include '../app/Views/layout/footer.php';
