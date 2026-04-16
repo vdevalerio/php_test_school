@@ -20,6 +20,9 @@ include '../app/Views/layout/banner.php';
             <th>#</th>
             <th>Nome</th>
             <th>Ano</th>
+            <th>Visualizar</th>
+            <th>Editar</th>
+            <th>Excluir</th>
         </tr>
     </thead>
     <tbody>
@@ -28,6 +31,28 @@ include '../app/Views/layout/banner.php';
                 <td><?php echo $turma['id']; ?></td>
                 <td><?php echo $turma['nome']; ?></td>
                 <td><?php echo $turma['ano']; ?></td>
+                <td>
+                    <button 
+                        type="button" 
+                        onclick="window.location.href='/turmas/<?php echo $turma['id']; ?>'"
+                    >
+                        Visualizar
+                    </button>
+                </td>
+                <td>
+                    <?php component('modal-trigger', [
+                        'id'       => 'editarTurma-' . $turma['id'],
+                        'label'    => 'Editar',
+                        'variant'  => 'primary',
+                        'fetchUrl' => '/turmas/' . $turma['id'] . '/edit',
+                    ]) ?>
+                </td>
+                <td>
+                    <form method="POST" action="/turmas/<?= $turma['id'] ?>">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit">Excluir</button>
+                    </form>
+                </td>
             </tr>
         <?php endforeach; ?>
     </tbody>

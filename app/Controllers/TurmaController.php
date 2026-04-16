@@ -42,4 +42,46 @@ class TurmaController
         header('Location: /turmas');
         exit;
     }
+
+    public function show($id)
+    {
+        $turma = Turma::find($id);
+        $heading = 'Turma';
+        require "../app/Views/turmas/show.php";
+    }
+
+    public function edit($id)
+    {
+        $turma = Turma::find($id);
+        $action = "/turmas/$id";
+        $method = "PUT";
+        $submitLabel = 'Atualizar turma';
+        require "../app/Views/turmas/_form.php";
+    }
+
+    public function update($id)
+    {
+        $nome = trim($_POST['nome'] ?? '');
+        $ano  = trim($_POST['ano'] ?? '');
+
+        if (empty($nome) || empty($ano)) {
+            header("Location: /turmas/$id/edit?error=campos_obrigatorios");
+            exit;
+        }
+
+        Turma::update($id, [
+            'nome' => $nome,
+            'ano' => $ano
+        ]);
+
+        header("Location: /turmas");
+        exit;
+    }
+
+    public function destroy($id)
+    {
+        Turma::delete($id);
+        header('Location: /turmas');
+        exit;
+    }
 }
