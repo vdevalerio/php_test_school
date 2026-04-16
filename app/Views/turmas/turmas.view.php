@@ -6,6 +6,10 @@
     <title>Turmas</title>
 </head>
 <body>
+
+    <?php include '../app/Views/layout/nav.php'; ?>
+    <?php include '../app/Views/layout/banner.php'; ?>
+
     <ul>
         <?php foreach ($turmasFiltradas as $turma): ?>
             <li><?php echo $turma['nome']; ?> - <?php echo $turma['ano']; ?></li>

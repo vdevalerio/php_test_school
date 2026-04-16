@@ -15,4 +15,5 @@ $turmasFiltradas = array_filter($turmas, function ($turma) {
     return $turma['ano'] == '2025';
 });
 
-require "turmas.view.php";
+$heading = 'Turmas';
+require "../app/Views/turmas/turmas.view.php";

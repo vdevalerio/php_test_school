@@ -7,7 +7,8 @@
 </head>
 <body>
 
-    <h1>Notas</h1>
+    <?php include '../app/Views/layout/nav.php'; ?>
+    <?php include '../app/Views/layout/banner.php'; ?>
 
 </body>
 </html>

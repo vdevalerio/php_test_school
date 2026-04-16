@@ -1,3 +1,4 @@
 <?php
 
-include 'notas.view.php';
+$heading = 'Notas';
+include '../app/Views/notas/notas.view.php';

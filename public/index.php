@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escola</title>
-</head>
-<body>
+<?php include '../app/Views/layout/header.php'; ?>
+<?php include '../app/Views/layout/nav.php'; ?>
 
-    <a href="/">Página Inicial</a>
-    <a href="/turmas.php">Turmas</a>
-    <a href="/alunos.php">Alunos</a>
-    <a href="/notas.php">Notas</a>
+<?php $heading = 'Página Inicial'; ?>
+<?php include '../app/Views/layout/banner.php'; ?>
 
-</body>
-</html>
+<?php include '../app/Views/layout/footer.php'; ?>
