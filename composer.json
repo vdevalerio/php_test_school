@@ -1,0 +1,14 @@
+{
+    "name": "mdlw/php_test_school",
+    "authors": [
+        {
+            "name": "Marcos Valério",
+            "email": "marcosvaleriox12@hotmail.com"
+        }
+    ],
+    "require": {
+        "knplabs/knp-snappy": "^1.6",
+        "phpoffice/phpword": "^1.4",
+        "phpoffice/phpspreadsheet": "^5.6"
+    }
+}
