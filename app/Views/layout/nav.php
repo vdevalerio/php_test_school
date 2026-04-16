@@ -1,4 +1,4 @@
 <a href="/">Página Inicial</a>
-<a href="/turmas.php">Turmas</a>
-<a href="/alunos.php">Alunos</a>
-<a href="/notas.php">Notas</a>
+<a href="/turmas">Turmas</a>
+<a href="/alunos">Alunos</a>
+<a href="/notas">Notas</a>
