@@ -23,9 +23,9 @@ class Database {
         );
     }
 
-    public function query($query) {
+    public function query($query, array $params = []) {
         $statement = self::$connection->prepare($query);
-        $statement->execute();
+        $statement->execute($params);
         return $statement;
     }
 }
