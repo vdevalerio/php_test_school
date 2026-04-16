@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escola</title>
+    <title>Notas</title>
 </head>
 <body>
 
-    <a href="/">Página Inicial</a>
-    <a href="/turmas.php">Turmas</a>
-    <a href="/alunos.php">Alunos</a>
-    <a href="/notas.php">Notas</a>
+    <h1>Notas</h1>
 
 </body>
 </html>
