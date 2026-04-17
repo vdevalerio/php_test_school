@@ -41,11 +41,93 @@
     transform: translateY(0);
 }
 
+/* ACTION MENU */
+.action-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.action-menu__toggle {
+    cursor: pointer;
+}
+
+.action-menu__dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    min-width: 130px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    padding: 4px 0;
+    flex-direction: column;
+}
+
+.action-menu__dropdown.open {
+    display: flex;
+}
+
+.action-menu__dropdown > a,
+.action-menu__dropdown > button,
+.action-menu__dropdown > form {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 14px;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    font-size: 14px;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.action-menu__dropdown > a:hover,
+.action-menu__dropdown > button:hover {
+    background: var(--accent-bg);
+}
+
+.action-menu__dropdown > form {
+    padding: 0;
+}
+
+.action-menu__dropdown > form > button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 14px;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    font-size: 14px;
+    cursor: pointer;
+    box-sizing: border-box;
+    color: var(--text);
+}
+
+.action-menu__dropdown > form > button:hover {
+    background: var(--accent-bg);
+}
+
+.action-menu__dropdown > .btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    margin: 0;
+}
+
 /* MODAL */
 .modal {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   left: 0;
   top: 0;
   width: 100%;

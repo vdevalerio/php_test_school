@@ -20,9 +20,7 @@ include '../app/Views/layout/banner.php';
             <th>#</th>
             <th>Nome</th>
             <th>Ano</th>
-            <th>Visualizar</th>
-            <th>Editar</th>
-            <th>Excluir</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -32,26 +30,28 @@ include '../app/Views/layout/banner.php';
                 <td><?php echo $turma['nome']; ?></td>
                 <td><?php echo $turma['ano']; ?></td>
                 <td>
-                    <button 
-                        type="button" 
-                        onclick="window.location.href='/turmas/<?php echo $turma['id']; ?>'"
-                    >
-                        Visualizar
-                    </button>
-                </td>
-                <td>
-                    <?php component('modal-trigger', [
-                        'id'       => 'editarTurma-' . $turma['id'],
-                        'label'    => 'Editar',
-                        'variant'  => 'primary',
-                        'fetchUrl' => '/turmas/' . $turma['id'] . '/edit',
-                    ]) ?>
-                </td>
-                <td>
-                    <form method="POST" action="/turmas/<?= $turma['id'] ?>">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit">Excluir</button>
-                    </form>
+                    <div class="action-menu">
+                        <button
+                            type="button"
+                            class="action-menu__toggle"
+                            onclick="toggleActionMenu(this)"
+                        >
+                            Ações
+                        </button>
+                        <div class="action-menu__dropdown">
+                            <a href="/turmas/<?php echo $turma['id']; ?>">Visualizar</a>
+                            <?php component('modal-trigger', [
+                                'id'       => 'editarTurma-' . $turma['id'],
+                                'label'    => 'Editar',
+                                'variant'  => 'primary',
+                                'fetchUrl' => '/turmas/' . $turma['id'] . '/edit',
+                            ]) ?>
+                            <form method="POST" action="/turmas/<?= $turma['id'] ?>">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </div>
+                    </div>
                 </td>
             </tr>
         <?php endforeach; ?>
