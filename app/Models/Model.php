@@ -46,10 +46,28 @@ abstract class Model
         if (!$data) return false;
 
         foreach ($data as $key => $value) {
-            $instance->$key = $value;
+            $instance->$key = $instance->castValue($key, $value);
         }
 
         return $instance;
+    }
+
+    protected function castValue(string $key, mixed $value): mixed
+    {
+        $casts = $this->casts ?? [];
+        $type  = $casts[$key] ?? null;
+
+        if ($value === null || $type === null) {
+            return $value;
+        }
+
+        return match ($type) {
+            'int', 'integer' => (int) $value,
+            'float'          => (float) $value,
+            'bool', 'boolean'=> (bool) $value,
+            'datetime'       => new \DateTime($value),
+            default          => $value,
+        };
     }
 
     public static function create(array $data): void
