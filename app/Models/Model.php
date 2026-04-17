@@ -20,13 +20,20 @@ abstract class Model
         return $instance->db->query("SELECT * FROM " . static::$table)->fetchAll();
     }
 
-    public static function find(int $id): array|false
+    public static function find(int $id): static|false
     {
         $instance = new static();
-        return $instance->db->query(
+        $data = $instance->db->query(
             "SELECT * FROM " . static::$table . " WHERE id = ?",
             [$id]
         )->fetch();
+        if (!$data) return false;
+
+        foreach ($data as $key => $value) {
+            $instance->$key = $value;
+        }
+
+        return $instance;
     }
 
     public static function create(array $data): void
