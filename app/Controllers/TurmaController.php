@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Core\Database;
+use App\Models\Aluno;
+use App\Models\Nota;
 use App\Models\Turma;
 
 class TurmaController
@@ -80,6 +82,9 @@ class TurmaController
 
     public function destroy($id)
     {
+        $alunoIds = Aluno::pluck('id', 'turma_id', $id);
+        Nota::deleteWhereIn('aluno_id', $alunoIds);
+        Aluno::deleteWhere('turma_id', $id);
         Turma::delete($id);
         header('Location: /turmas');
         exit;

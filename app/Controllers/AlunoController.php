@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Aluno;
+use App\Models\Nota;
 
 class AlunoController
 {
@@ -84,6 +85,7 @@ class AlunoController
 
     public function destroy($id)
     {
+        Nota::deleteWhere('aluno_id', $id);
         Aluno::delete($id);
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/alunos'));
         exit;

@@ -30,6 +30,16 @@ abstract class Model
         return isset($this->attributes[$name]);
     }
 
+    public static function pluck(string $column, string $whereColumn, mixed $whereValue): array
+    {
+        $instance = new static();
+        $rows = $instance->db->query(
+            "SELECT $column FROM " . static::$table . " WHERE $whereColumn = ?",
+            [$whereValue]
+        )->fetchAll(\PDO::FETCH_COLUMN);
+        return $rows ?: [];
+    }
+
     public static function all(): array
     {
         $instance = new static();
@@ -99,6 +109,27 @@ abstract class Model
         $instance->db->query(
             "DELETE FROM " . static::$table . " WHERE id = ?",
             [$id]
+        );
+    }
+
+    public static function deleteWhere(string $column, mixed $value): void
+    {
+        $instance = new static();
+        $instance->db->query(
+            "DELETE FROM " . static::$table . " WHERE $column = ?",
+            [$value]
+        );
+    }
+
+    public static function deleteWhereIn(string $column, array $values): void
+    {
+        if (empty($values)) return;
+
+        $instance = new static();
+        $placeholders = implode(', ', array_fill(0, count($values), '?'));
+        $instance->db->query(
+            "DELETE FROM " . static::$table . " WHERE $column IN ($placeholders)",
+            $values
         );
     }
 }
