@@ -1,14 +1,11 @@
-<?php
-
-use App\Models\Turma;
+<?php 
 
 include '../app/Views/layout/header.php';
 
 include '../app/Views/layout/nav.php';
-$alunos = $turma->alunos();
-?>
+include '../app/Views/layout/banner.php';
 
-<h1>#<?= $turma->id ?> - <?= $turma->nome ?> - <?= $turma->ano ?></h1>
+?>
 
 <?php component('modal-trigger', [
     'id'       => 'criarAluno',
@@ -22,8 +19,8 @@ $alunos = $turma->alunos();
         <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>E-mail</th>
-            <th>Criado em</th>
+            <th>Email</th>
+            <th>Turma</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -33,7 +30,7 @@ $alunos = $turma->alunos();
                 <td><?php echo $aluno['id']; ?></td>
                 <td><?php echo $aluno['nome']; ?></td>
                 <td><?php echo $aluno['email']; ?></td>
-                <td><?php echo $aluno['criado_em']; ?></td>
+                <td><?php echo $aluno['turma_id']; ?></td>
                 <td>
                     <div class="action-menu">
                         <button
