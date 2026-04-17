@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Aluno;
+use App\Models\Turma;
 
 include '../app/Views/layout/header.php';
 include '../app/Views/layout/nav.php';
@@ -20,6 +21,7 @@ $rows = array_map(fn($nota) => [
     'cells'   => [
         $nota['id'],
         Aluno::find($nota['aluno_id'])->nome,
+        Turma::find(Aluno::find($nota['aluno_id'])->turma_id)->nome,
         $nota['disciplina'],
         $nota['nota'],
         $nota['data_lancamento'],
@@ -32,6 +34,6 @@ $rows = array_map(fn($nota) => [
 ], $notas);
 ?>
 
-<?php component('table', ['columns' => ['#', 'Aluno', 'Disciplina', 'Nota', 'Data de Lançamento'], 'rows' => $rows]) ?>
+<?php component('table', ['columns' => ['#', 'Aluno', 'Turma', 'Disciplina', 'Nota', 'Data de Lançamento'], 'rows' => $rows]) ?>
 
 <?php include '../app/Views/layout/footer.php'; ?>
