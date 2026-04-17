@@ -1,15 +1,13 @@
 <?php
 
-use App\Models\Turma;
+use App\Models\Aluno;
 
 include '../app/Views/layout/header.php';
 
 include '../app/Views/layout/nav.php';
-$notas = $aluno->notas();
-?>
+include '../app/Views/layout/banner.php';
 
-<h1>#<?= $aluno->id ?> - <?= $aluno->nome ?> - <?= $aluno->turma()->nome ?></h1>
-<h4><?= $aluno->email ?></h4>
+?>
 
 <?php component('modal-trigger', [
     'id' => 'criarNota',
@@ -18,12 +16,11 @@ $notas = $aluno->notas();
     'fetchUrl' => '/notas/create',
 ]) ?>
 
-
-
 <table>
     <thead>
         <tr>
             <th>#</th>
+            <th>Aluno</th>
             <th>Disciplina</th>
             <th>Nota</th>
             <th>Data de Lançamento</th>
@@ -34,6 +31,7 @@ $notas = $aluno->notas();
         <?php foreach ($notas as $nota): ?>
             <tr>
                 <td><?php echo $nota['id']; ?></td>
+                <td><?php echo Aluno::find($nota['aluno_id'])->nome; ?></td>
                 <td><?php echo $nota['disciplina']; ?></td>
                 <td><?php echo $nota['nota']; ?></td>
                 <td><?php echo $nota['data_lancamento']; ?></td>
@@ -47,7 +45,6 @@ $notas = $aluno->notas();
                             Ações
                         </button>
                         <div class="action-menu__dropdown">
-                            <a href="/notas/<?php echo $nota['id']; ?>">Visualizar</a>
                             <?php component('modal-trigger', [
                                 'id' => 'editarNota-' . $nota['id'],
                                 'label' => 'Editar',

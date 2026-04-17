@@ -18,4 +18,11 @@ $router->get('/alunos/{id}/edit', 'AlunoController@edit');
 $router->put('/alunos/{id}', 'AlunoController@update');
 $router->delete('/alunos/{id}', 'AlunoController@destroy');
 
+$router->get('/notas', 'NotaController@index');
+$router->get('/notas/create', 'NotaController@create');
+$router->post('/notas', 'NotaController@store');
+$router->get('/notas/{id}/edit', 'NotaController@edit');
+$router->put('/notas/{id}', 'NotaController@update');
+$router->delete('/notas/{id}', 'NotaController@destroy');
+
 $router->dispatch();
