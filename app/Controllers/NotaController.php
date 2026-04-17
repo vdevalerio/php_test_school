@@ -28,17 +28,18 @@ class NotaController
         $aluno_id = trim($_POST['aluno_id'] ?? '');
         $disciplina = trim($_POST['disciplina'] ?? '');
         $nota = trim($_POST['nota'] ?? '');
+        $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
             header('Location: /notas?error=campos_obrigatorios');
             exit;
         }
-        
+
         Nota::create([
             'aluno_id' => $aluno_id,
             'disciplina' => $disciplina,
             'nota' => $nota,
-            'data_lancamento' => date('Y-m-d H:i:s')
+            'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/notas'));
@@ -59,6 +60,7 @@ class NotaController
         $aluno_id = trim($_POST['aluno_id'] ?? '');
         $disciplina = trim($_POST['disciplina'] ?? '');
         $nota = trim($_POST['nota'] ?? '');
+        $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
             header("Location: /notas/$id/edit?error=campos_obrigatorios");
@@ -69,6 +71,7 @@ class NotaController
             'aluno_id' => $aluno_id,
             'disciplina' => $disciplina,
             'nota' => $nota,
+            'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
         header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '/notas'));

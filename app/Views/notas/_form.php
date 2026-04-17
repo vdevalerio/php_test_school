@@ -28,5 +28,9 @@ use App\Models\Turma; ?>
     <input type="number" id="nota" name="nota"
            value="<?= htmlspecialchars($nota->nota ?? '') ?>" required>
 
+    <label for="data_lancamento">Data de Lançamento</label>
+    <input type="date" id="data_lancamento" name="data_lancamento"
+           value="<?= isset($nota->data_lancamento) ? date('Y-m-d', strtotime($nota->data_lancamento)) : date('Y-m-d') ?>">
+
     <button type="submit"><?= $submitLabel ?></button>
 </form>
