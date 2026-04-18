@@ -1,7 +1,3 @@
-<?php 
-
-?>
-
 <span class="close" data-close-modal>&times;</span>
 
 <form action="<?= $action ?>" method="POST">
