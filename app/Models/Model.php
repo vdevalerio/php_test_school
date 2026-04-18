@@ -9,6 +9,7 @@ abstract class Model
     protected static string $table;
     protected Database $db;
     protected array $attributes = [];
+    protected array $casts = [];
 
     public function __construct()
     {
