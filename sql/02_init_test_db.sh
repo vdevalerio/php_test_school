@@ -1,0 +1,9 @@
+#!/bin/bash
+mysql -u root -p"${MYSQL_ROOT_PASSWORD}" <<EOF
+CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE}_test;
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}_test.* TO '${MYSQL_USER}'@'%';
+FLUSH PRIVILEGES;
+
+USE ${MYSQL_DATABASE}_test;
+SOURCE /docker-entrypoint-initdb.d/01_schema.sql;
+EOF
