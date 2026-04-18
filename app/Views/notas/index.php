@@ -14,20 +14,21 @@ component('modal-trigger', [
     'fetchUrl' => '/notas/create',
 ]);
 
+
 $rows = array_map(function($nota) {
-    $baseUrl = '/notas/' . $nota['id'];
+    $baseUrl = '/notas/' . $nota->id;
 
     return [
         'cells'   => [
-            $nota['id'],
-            Aluno::find($nota['aluno_id'])->nome,
-            Turma::find(Aluno::find($nota['aluno_id'])->turma_id)->nome,
-            $nota['disciplina'],
-            $nota['nota'],
-            $nota['data_lancamento'],
+            $nota->id,
+            Aluno::find($nota->aluno_id)->nome,
+            Turma::find(Aluno::find($nota->aluno_id)->turma_id)->nome,
+            $nota->disciplina,
+            $nota->nota,
+            ['value' => $nota->data_lancamento, 'format' => 'd/m/Y'],
         ],
         'actions' => [
-            'editId'       => 'editarNota-' . $nota['id'],
+            'editId'       => 'editarNota-' . $nota->id,
             'editFetchUrl' => $baseUrl . '/edit',
             'deleteUrl'    => $baseUrl,
         ]
@@ -41,7 +42,7 @@ component('table', [
         'Turma',
         'Disciplina',
         'Nota',
-        'Data de Lançamento'
+        'Data'
     ],
     'rows' => $rows
 ]);

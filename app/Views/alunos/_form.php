@@ -32,12 +32,12 @@ $turmas = Turma::all();
     <select id="turma_id" name="turma_id">
         <?php foreach ($turmas as $turmaItem): ?>
             <?php
-            $selected = $turmaItem['id'] == ($aluno->turma_id ?? null)
+            $selected = $turmaItem->id == ($aluno->turma_id ?? null)
                 ? 'selected'
                 : '';
             ?>
-            <option value="<?= $turmaItem['id'] ?>" <?= $selected ?>>
-                <?= htmlspecialchars($turmaItem['nome']) ?>
+            <option value="<?= $turmaItem->id ?>" <?= $selected ?>>
+                <?= htmlspecialchars($turmaItem->nome) ?>
             </option>
         <?php endforeach; ?>
     </select>

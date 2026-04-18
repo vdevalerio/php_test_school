@@ -12,25 +12,26 @@ component('modal-trigger', [
 ]);
 
 $rows = array_map(function($aluno) {
-    $baseUrl = '/alunos/' . $aluno['id'];
+    $baseUrl = '/alunos/' . $aluno->id;
 
     return [
     'cells' => [
-        $aluno['id'],
-        $aluno['nome'],
-        $aluno['email'],
-        $aluno['turma_id']
+        $aluno->id,
+        $aluno->nome,
+        $aluno->email,
+        $aluno->turma_id,
+        ['value' => $aluno->criado_em, 'format' => 'd/m/Y']
     ],
     'actions' => [
         'showUrl'      => $baseUrl,
-        'editId'       => 'editarAluno-' . $aluno['id'],
+        'editId'       => 'editarAluno-' . $aluno->id,
         'editFetchUrl' => $baseUrl . '/edit',
         'deleteUrl'    => $baseUrl,
     ]];
 }, $alunos);
 
 component('table', [
-    'columns' => ['#', 'Nome', 'Email', 'Turma'],
+    'columns' => ['#', 'Nome', 'Email', 'Turma', 'Criado Em'],
     'rows' => $rows
 ]);
 

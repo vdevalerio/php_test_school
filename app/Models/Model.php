@@ -48,9 +48,17 @@ abstract class Model
     public static function all(): array
     {
         $instance = new static();
-        return $instance->db->query(
+        $rows     = $instance->db->query(
             "SELECT * FROM " . static::$table
         )->fetchAll();
+
+        return array_map(function (array $data) {
+            $obj = new static();
+            foreach ($data as $key => $value) {
+                $obj->$key = $obj->castValue($key, $value);
+            }
+            return $obj;
+        }, $rows);
     }
 
     public static function find(int $id): static|false

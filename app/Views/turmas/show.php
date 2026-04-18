@@ -24,18 +24,18 @@ component('modal-trigger', [
 ]);
 
 $rows = array_map(function($aluno) {
-    $baseUrl = '/alunos/' . $aluno['id'];
+    $baseUrl = '/alunos/' . $aluno->id;
 
     return [
         'cells' => [
-            $aluno['id'],
-            $aluno['nome'],
-            $aluno['email'],
-            $aluno['criado_em']
+            $aluno->id,
+            $aluno->nome,
+            $aluno->email,
+            ['value' => $aluno->criado_em, 'format' => 'd/m/Y']
         ],
         'actions' => [
             'showUrl'      => $baseUrl,
-            'editId'       => 'editarAluno-' . $aluno['id'],
+            'editId'       => 'editarAluno-' . $aluno->id,
             'editFetchUrl' => $baseUrl . '/edit',
             'deleteUrl'    => $baseUrl,
         ]];

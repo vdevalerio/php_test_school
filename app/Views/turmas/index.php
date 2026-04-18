@@ -12,13 +12,13 @@ component('modal-trigger', [
 ]);
 
 $rows = array_map(function($turma) {
-    $baseUrl = '/turmas/' . $turma['id'];
+    $baseUrl = '/turmas/' . $turma->id;
 
     return [
-        'cells' => [$turma['id'], $turma['nome'], $turma['ano']],
+        'cells' => [$turma->id, $turma->nome, $turma->ano],
         'actions' => [
             'showUrl'      => $baseUrl,
-            'editId'       => 'editarTurma-' . $turma['id'],
+            'editId'       => 'editarTurma-' . $turma->id,
             'editFetchUrl' => $baseUrl . '/edit',
             'deleteUrl'    => $baseUrl,
         ],

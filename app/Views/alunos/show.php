@@ -25,17 +25,17 @@ component('modal-trigger', [
 ]);
 
 $rows = array_map(function($nota) {
-    $baseUrl = '/notas/' . $nota['id'];
+    $baseUrl = '/notas/' . $nota->id;
 
     return [
         'cells' => [
-            $nota['id'],
-            $nota['disciplina'],
-            $nota['nota'],
-            $nota['data_lancamento']
+            $nota->id,
+            $nota->disciplina,
+            $nota->nota,
+            ['value' => $nota->data_lancamento, 'format' => 'd/m/Y']
         ],
         'actions' => [
-            'editId'       => 'editarNota-' . $nota['id'],
+            'editId'       => 'editarNota-' . $nota->id,
             'editFetchUrl' => $baseUrl . '/edit',
             'deleteUrl'    => $baseUrl,
         ]];

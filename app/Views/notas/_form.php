@@ -17,12 +17,12 @@ $date   = isset($nota->data_lancamento)
     <select id="aluno_id" name="aluno_id">
         <?php foreach ($alunos as $alunoItem): ?>
             <?php
-            $selected = $alunoItem['id'] == ($nota->aluno_id ?? null)
+            $selected = $alunoItem->id == ($nota->aluno_id ?? null)
                 ? 'selected'
                 : '';
             ?>
-            <option value="<?= $alunoItem['id'] ?>" <?= $selected ?>>
-                <?= htmlspecialchars($alunoItem['nome']) ?>
+            <option value="<?= $alunoItem->id ?>" <?= $selected ?>>
+                <?= htmlspecialchars($alunoItem->nome) ?>
             </option>
         <?php endforeach; ?>
     </select>

@@ -9,12 +9,20 @@ class Turma extends Model
     public string $nome;
     public int $ano;
 
-    public function alunos()
+    public function alunos(): array
     {
         $instance = new static();
-        return $instance->db->query(
+        $rows     = $instance->db->query(
             "SELECT alunos.* FROM alunos WHERE alunos.turma_id = ?",
             [$this->id]
         )->fetchAll();
+
+        return array_map(function (array $data) {
+            $obj = new Aluno();
+            foreach ($data as $key => $value) {
+                $obj->$key = $obj->castValue($key, $value);
+            }
+            return $obj;
+        }, $rows);
     }
 }
