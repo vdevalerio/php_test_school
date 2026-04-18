@@ -8,8 +8,9 @@ use PDOStatement;
 class Database {
     private static ?PDO $connection = null;
     private static ?array $config = null;
+    private static ?self $instance = null;
 
-    public function __construct()
+    private function __construct()
     {
         $config = require __DIR__ . '/../../config/database.php';
         self::$config = $config;
@@ -23,6 +24,14 @@ class Database {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]
         );
+    }
+
+    public static function getInstance(): static
+    {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
     public function query($query, array $params = []): PDOStatement|false
