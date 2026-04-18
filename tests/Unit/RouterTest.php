@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Unit {
 
 use App\Core\Router;
 use PHPUnit\Framework\TestCase;
@@ -182,6 +182,136 @@ final class RouterTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // resolveUri
+    // -------------------------------------------------------------------------
+
+    public function test_resolve_uri_returns_path_from_request_uri(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/turmas';
+
+        $this->assertSame('/turmas', $this->resolveUri());
+    }
+
+    public function test_resolve_uri_strips_query_string(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/turmas?error=campos_obrigatorios';
+
+        $this->assertSame('/turmas', $this->resolveUri());
+    }
+
+    public function test_resolve_uri_handles_nested_path(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/turmas/5/edit';
+
+        $this->assertSame('/turmas/5/edit', $this->resolveUri());
+    }
+
+    // -------------------------------------------------------------------------
+    // matchesRoute
+    // -------------------------------------------------------------------------
+
+    public function test_matches_route_returns_true_for_matching_method_and_uri(): void
+    {
+        $route   = [
+            'method' => 'GET',
+            'uri'    => '/turmas',
+            'action' => 'TurmaController@index'
+        ];
+        $matches = null;
+
+        $result = $this->matchesRoute($route, 'GET', '/turmas', $matches);
+
+        $this->assertTrue($result);
+    }
+
+    public function test_matches_route_returns_false_for_wrong_method(): void
+    {
+        $route   = [
+            'method' => 'GET',
+            'uri'    => '/turmas',
+            'action' => 'TurmaController@index'
+        ];
+        $matches = null;
+
+        $result = $this->matchesRoute($route, 'POST', '/turmas', $matches);
+
+        $this->assertFalse($result);
+    }
+
+    public function test_matches_route_returns_false_for_wrong_uri(): void
+    {
+        $route   = [
+            'method' => 'GET',
+            'uri'    => '/turmas',
+            'action' => 'TurmaController@index'
+        ];
+        $matches = null;
+
+        $result = $this->matchesRoute($route, 'GET', '/alunos', $matches);
+
+        $this->assertFalse($result);
+    }
+
+    public function test_matches_route_matches_delete_method(): void
+    {
+        $route   = [
+            'method' => 'DELETE',
+            'uri'    => '/turmas/{id}',
+            'action' => 'TurmaController@destroy'
+        ];
+        $matches = null;
+
+        $result = $this->matchesRoute($route, 'DELETE', '/turmas/7', $matches);
+
+        $this->assertTrue($result);
+    }
+
+    // -------------------------------------------------------------------------
+    // dispatch
+    // -------------------------------------------------------------------------
+
+    public function test_dispatch_calls_abort_when_no_route_matches(): void
+    {
+        $router = new TestableRouter();
+        $_SERVER['REQUEST_URI']    = '/non-existent';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        ob_start();
+        try {
+            $router->dispatch();
+            $this->fail('Expected RuntimeException from terminate');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('terminated', $e->getMessage());
+        } finally {
+            ob_end_clean();
+        }
+    }
+
+    public function test_dispatch_calls_action_when_route_matches_void_action(): void
+    {
+        $router = new TestableRouter();
+        $router->get('/stub', 'RouterTestStubController@voidAction');
+        $_SERVER['REQUEST_URI']    = '/stub';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $router->dispatch();
+
+        $this->assertTrue(true);
+    }
+
+    public function test_dispatch_sends_response_when_action_returns_response(): void
+    {
+        $router = new TestableRouter();
+        $router->get('/stub', 'RouterTestStubController@responseAction');
+        $_SERVER['REQUEST_URI']    = '/stub';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('terminated');
+        $router->dispatch();
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -192,4 +322,57 @@ final class RouterTest extends TestCase
 
         return $method->invoke($this->router, $uri);
     }
+
+    private function resolveUri(): string
+    {
+        $reflection = new \ReflectionClass(Router::class);
+        $method     = $reflection->getMethod('resolveUri');
+
+        return $method->invoke($this->router);
+    }
+
+    private function matchesRoute(array $route, string $method, string $uri, ?array &$matches): bool
+    {
+        $reflection = new \ReflectionClass(Router::class);
+        $methodRef  = $reflection->getMethod('matchesRoute');
+
+        $args   = [$route, $method, $uri];
+        $args[] = &$matches;
+
+        return $methodRef->invokeArgs($this->router, $args);
+    }
+}
+
+class TestableRouter extends Router
+{
+    protected function terminate(): never
+    {
+        throw new \RuntimeException('terminated');
+    }
+}
+
+class RouterTestableResponse extends \App\Core\Response
+{
+    protected function terminate(): never
+    {
+        throw new \RuntimeException('terminated');
+    }
+}
+
+}
+
+namespace App\Controllers {
+
+if (!class_exists(\App\Controllers\RouterTestStubController::class)) {
+    class RouterTestStubController
+    {
+        public function voidAction(): void {}
+
+        public function responseAction(): \App\Core\Response
+        {
+            return \Tests\Unit\RouterTestableResponse::redirect('/test');
+        }
+    }
+}
+
 }
