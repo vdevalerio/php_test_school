@@ -87,7 +87,7 @@ abstract class Model
         };
     }
 
-    public static function create(array $data): void
+    public static function create(array $data): int
     {
         $instance     = new static();
         $columns      = implode(', ', array_keys($data));
@@ -100,6 +100,8 @@ abstract class Model
         );
 
         $instance->db->query($sql, array_values($data));
+
+        return (int) $instance->db->lastInsertId();
     }
 
     public static function update(int $id, array $data): void

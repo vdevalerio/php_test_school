@@ -41,4 +41,9 @@ class Database {
 
         return $statement;
     }
+
+    public function lastInsertId(): string
+    {
+        return self::$connection->lastInsertId();
+    }
 }
