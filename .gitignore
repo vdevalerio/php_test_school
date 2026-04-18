@@ -2,4 +2,5 @@
 /.env
 /.env.testing
 composer.lock
+.phpunit.result.cache
 /private
