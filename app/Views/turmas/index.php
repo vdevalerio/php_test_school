@@ -1,30 +1,34 @@
 <?php
 
-include '../app/Views/layout/header.php';
-include '../app/Views/layout/nav.php';
-include '../app/Views/layout/banner.php';
+include __DIR__ . '/../layout/header.php';
+include __DIR__ . '/../layout/nav.php';
+include __DIR__ . '/../layout/banner.php';
 
-?>
-
-<?php component('modal-trigger', [
-    'id' => 'criarTurma',
-    'label' => 'Criar Turma',
-    'variant' => 'primary',
+component('modal-trigger', [
+    'id'       => 'criarTurma',
+    'label'    => 'Criar Turma',
+    'variant'  => 'primary',
     'fetchUrl' => '/turmas/create',
-]) ?>
+]);
 
-<?php
-$rows = array_map(fn($turma) => [
-    'cells' => [$turma['id'], $turma['nome'], $turma['ano']],
-    'actions' => [
-        'showUrl' => '/turmas/' . $turma['id'],
-        'editId' => 'editarTurma-' . $turma['id'],
-        'editFetchUrl' => '/turmas/' . $turma['id'] . '/edit',
-        'deleteUrl' => '/turmas/' . $turma['id'],
-    ],
-], $turmas);
+$rows = array_map(function($turma) {
+    $baseUrl = '/turmas/' . $turma['id'];
+
+    return [
+        'cells' => [$turma['id'], $turma['nome'], $turma['ano']],
+        'actions' => [
+            'showUrl'      => $baseUrl,
+            'editId'       => 'editarTurma-' . $turma['id'],
+            'editFetchUrl' => $baseUrl . '/edit',
+            'deleteUrl'    => $baseUrl,
+        ],
+    ];
+}, $turmas);
+
+component('table', [
+    'columns' => ['#', 'Nome', 'Ano'],
+    'rows' => $rows
+]);
 ?>
 
-<?php component('table', ['columns' => ['#', 'Nome', 'Ano'], 'rows' => $rows]) ?>
-
-<?php include '../app/Views/layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

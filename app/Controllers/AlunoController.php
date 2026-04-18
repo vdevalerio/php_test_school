@@ -7,38 +7,39 @@ use App\Models\Nota;
 
 class AlunoController
 {
-    public function index()
+    public function index(): void
     {
-        $alunos = Aluno::all();
+        $alunos     = Aluno::all();
+        $heading    = 'Alunos';
 
-        $heading = 'Alunos';
         require "../app/Views/alunos/index.php";
     }
 
     public function create(): void
     {
-        $action = '/alunos';
-        $method = 'POST';
-        $aluno = null;
+        $action      = '/alunos';
+        $method      = 'POST';
+        $aluno       = null;
         $submitLabel = 'Criar aluno';
+
         require "../app/Views/alunos/_form.php";
     }
 
     public function store(): void
     {
-        $nome = trim($_POST['nome'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $nome     = trim($_POST['nome'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
             header('Location: /alunos?error=campos_obrigatorios');
             exit;
         }
-        
+
         Aluno::create([
-            'nome' => $nome,
-            'email' => $email,
-            'turma_id' => $turma_id,
+            'nome'      => $nome,
+            'email'     => $email,
+            'turma_id'  => $turma_id,
             'criado_em' => date('Y-m-d H:i:s')
         ]);
 
@@ -46,26 +47,28 @@ class AlunoController
         exit;
     }
 
-    public function show($id)
+    public function show($id): void
     {
-        $aluno = Aluno::find($id);
+        $aluno   = Aluno::find($id);
         $heading = 'Aluno';
+
         require "../app/Views/alunos/show.php";
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
-        $aluno = Aluno::find($id);
-        $action = "/alunos/$id";
-        $method = "PUT";
+        $aluno       = Aluno::find($id);
+        $action      = "/alunos/$id";
+        $method      = "PUT";
         $submitLabel = 'Atualizar aluno';
+
         require "../app/Views/alunos/_form.php";
     }
 
-    public function update($id)
+    public function update($id): void
     {
-        $nome = trim($_POST['nome'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $nome     = trim($_POST['nome'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
@@ -74,8 +77,8 @@ class AlunoController
         }
 
         Aluno::update($id, [
-            'nome' => $nome,
-            'email' => $email,
+            'nome'     => $nome,
+            'email'    => $email,
             'turma_id' => $turma_id
         ]);
 
@@ -83,10 +86,11 @@ class AlunoController
         exit;
     }
 
-    public function destroy($id)
+    public function destroy($id): void
     {
         Nota::deleteWhere('aluno_id', $id);
         Aluno::delete($id);
+
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/alunos'));
         exit;
     }

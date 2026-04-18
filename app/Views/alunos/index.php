@@ -1,30 +1,39 @@
 <?php
 
-include '../app/Views/layout/header.php';
-include '../app/Views/layout/nav.php';
-include '../app/Views/layout/banner.php';
+include __DIR__ . '/../layout/header.php';
+include __DIR__ . '/../layout/nav.php';
+include __DIR__ . '/../layout/banner.php';
 
-?>
-
-<?php component('modal-trigger', [
-    'id' => 'criarAluno',
-    'label' => 'Criar Aluno',
-    'variant' => 'primary',
+component('modal-trigger', [
+    'id'       => 'criarAluno',
+    'label'    => 'Criar Aluno',
+    'variant'  => 'primary',
     'fetchUrl' => '/alunos/create',
-]) ?>
+]);
 
-<?php
-$rows = array_map(fn($aluno) => [
-    'cells' => [$aluno['id'], $aluno['nome'], $aluno['email'], $aluno['turma_id']],
-    'actions' => [
-        'showUrl' => '/alunos/' . $aluno['id'],
-        'editId' => 'editarAluno-' . $aluno['id'],
-        'editFetchUrl' => '/alunos/' . $aluno['id'] . '/edit',
-        'deleteUrl' => '/alunos/' . $aluno['id'],
+$rows = array_map(function($aluno) {
+    $baseUrl = '/alunos/' . $aluno['id'];
+
+    return [
+    'cells' => [
+        $aluno['id'],
+        $aluno['nome'],
+        $aluno['email'],
+        $aluno['turma_id']
     ],
-], $alunos);
+    'actions' => [
+        'showUrl'      => $baseUrl,
+        'editId'       => 'editarAluno-' . $aluno['id'],
+        'editFetchUrl' => $baseUrl . '/edit',
+        'deleteUrl'    => $baseUrl,
+    ]];
+}, $alunos);
+
+component('table', [
+    'columns' => ['#', 'Nome', 'Email', 'Turma'],
+    'rows' => $rows
+]);
+
 ?>
 
-<?php component('table', ['columns' => ['#', 'Nome', 'Email', 'Turma'], 'rows' => $rows]) ?>
-
-<?php include '../app/Views/layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

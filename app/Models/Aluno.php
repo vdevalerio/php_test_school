@@ -9,19 +9,17 @@ class Aluno extends Model
     public string $nome;
     public string $email;
     public int $turma_id;
-    
-    public function turma()
+
+    public function turma(): ?Turma
     {
         return Turma::find($this->turma_id);
     }
-    
-    public function notas()
+
+    public function notas(): array
     {
-        $instance = new static();
-        return $instance->db->query("
-            SELECT notas.*
-            FROM notas
-            WHERE notas.aluno_id = ?
-        ", [$this->id])->fetchAll();
+        return $this->db->query(
+            "SELECT notas.* FROM notas WHERE notas.aluno_id = ?",
+            [$this->id]
+        )->fetchAll();
     }
 }

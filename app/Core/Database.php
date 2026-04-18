@@ -3,15 +3,17 @@
 namespace App\Core;
 
 use PDO;
+use PDOStatement;
 
 class Database {
     private static ?PDO $connection = null;
     private static ?array $config = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         $config = require __DIR__ . '/../../config/database.php';
-        self::$config = $config;    
-        
+        self::$config = $config;
+
         $data_source_name = "mysql:" . http_build_query(self::$config, '', ';');
         self::$connection = new PDO(
             $data_source_name,
@@ -23,9 +25,11 @@ class Database {
         );
     }
 
-    public function query($query, array $params = []) {
+    public function query($query, array $params = []): PDOStatement|false
+    {
         $statement = self::$connection->prepare($query);
         $statement->execute($params);
+
         return $statement;
     }
 }

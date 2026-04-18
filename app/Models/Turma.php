@@ -12,10 +12,9 @@ class Turma extends Model
     public function alunos()
     {
         $instance = new static();
-        return $instance->db->query("
-            SELECT alunos.*
-            FROM alunos
-            WHERE alunos.turma_id = ?
-        ", [$this->id])->fetchAll();
+        return $instance->db->query(
+            "SELECT alunos.* FROM alunos WHERE alunos.turma_id = ?",
+            [$this->id]
+        )->fetchAll();
     }
 }

@@ -2,18 +2,17 @@
 
 namespace App\Controllers;
 
-use App\Core\Database;
 use App\Models\Aluno;
 use App\Models\Nota;
 use App\Models\Turma;
 
 class TurmaController
 {
-    public function index()
+    public function index(): void
     {
-        $turmas = Turma::all();
+        $turmas     = Turma::all();
+        $heading    = 'Turmas';
 
-        $heading = 'Turmas';
         require "../app/Views/turmas/index.php";
     }
 
@@ -23,6 +22,7 @@ class TurmaController
         $method      = 'POST';
         $turma       = null;
         $submitLabel = 'Criar turma';
+
         require "../app/Views/turmas/_form.php";
     }
 
@@ -35,33 +35,35 @@ class TurmaController
             header('Location: /turmas?error=campos_obrigatorios');
             exit;
         }
-        
+
         Turma::create([
             'nome' => $nome,
-            'ano' => $ano
+            'ano'  => $ano
         ]);
 
         header('Location: /turmas');
         exit;
     }
 
-    public function show($id)
+    public function show($id): void
     {
-        $turma = Turma::find($id);
+        $turma   = Turma::find($id);
         $heading = 'Turma';
+
         require "../app/Views/turmas/show.php";
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
-        $turma = Turma::find($id);
-        $action = "/turmas/$id";
-        $method = "PUT";
+        $turma       = Turma::find($id);
+        $action      = "/turmas/$id";
+        $method      = "PUT";
         $submitLabel = 'Atualizar turma';
+
         require "../app/Views/turmas/_form.php";
     }
 
-    public function update($id)
+    public function update($id): void
     {
         $nome = trim($_POST['nome'] ?? '');
         $ano  = trim($_POST['ano'] ?? '');
@@ -72,20 +74,21 @@ class TurmaController
         }
 
         Turma::update($id, [
-            'nome' => $nome,
-            'ano' => $ano
+            'nome'  => $nome,
+            'ano'   => $ano
         ]);
 
         header("Location: /turmas");
         exit;
     }
 
-    public function destroy($id)
+    public function destroy($id): void
     {
         $alunoIds = Aluno::pluck('id', 'turma_id', $id);
         Nota::deleteWhereIn('aluno_id', $alunoIds);
         Aluno::deleteWhere('turma_id', $id);
         Turma::delete($id);
+
         header('Location: /turmas');
         exit;
     }

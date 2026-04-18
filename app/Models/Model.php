@@ -30,7 +30,11 @@ abstract class Model
         return isset($this->attributes[$name]);
     }
 
-    public static function pluck(string $column, string $whereColumn, mixed $whereValue): array
+    public static function pluck(
+        string $column,
+        string $whereColumn,
+        mixed $whereValue
+    ): array
     {
         $instance = new static();
         $rows = $instance->db->query(
@@ -43,13 +47,15 @@ abstract class Model
     public static function all(): array
     {
         $instance = new static();
-        return $instance->db->query("SELECT * FROM " . static::$table)->fetchAll();
+        return $instance->db->query(
+            "SELECT * FROM " . static::$table
+        )->fetchAll();
     }
 
     public static function find(int $id): static|false
     {
         $instance = new static();
-        $data = $instance->db->query(
+        $data     = $instance->db->query(
             "SELECT * FROM " . static::$table . " WHERE id = ?",
             [$id]
         )->fetch();
@@ -82,20 +88,26 @@ abstract class Model
 
     public static function create(array $data): void
     {
-        $instance = new static();
-        $columns  = implode(', ', array_keys($data));
+        $instance     = new static();
+        $columns      = implode(', ', array_keys($data));
         $placeholders = implode(', ', array_fill(0, count($data), '?'));
-
-        $instance->db->query(
-            "INSERT INTO " . static::$table . " ($columns) VALUES ($placeholders)",
-            array_values($data)
+        $sql          = sprintf(
+            'INSERT INTO %s (%s) VALUES (%s)',
+            static::$table,
+            $columns,
+            $placeholders
         );
+
+        $instance->db->query($sql, array_values($data));
     }
 
     public static function update(int $id, array $data): void
     {
         $instance = new static();
-        $set = implode(', ', array_map(fn($col) => "$col = ?", array_keys($data)));
+        $set      = implode(
+            ', ',
+            array_map(fn($col) => "$col = ?", array_keys($data))
+        );
 
         $instance->db->query(
             "UPDATE " . static::$table . " SET $set WHERE id = ?",
@@ -125,11 +137,15 @@ abstract class Model
     {
         if (empty($values)) return;
 
-        $instance = new static();
+        $instance     = new static();
         $placeholders = implode(', ', array_fill(0, count($values), '?'));
-        $instance->db->query(
-            "DELETE FROM " . static::$table . " WHERE $column IN ($placeholders)",
-            $values
+        $sql          = sprintf(
+            'DELETE FROM %s WHERE %s IN (%s)',
+            static::$table,
+            $column,
+            $placeholders
         );
+
+        $instance->db->query($sql, $values);
     }
 }
