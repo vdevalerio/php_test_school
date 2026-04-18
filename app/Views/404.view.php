@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include '../app/Views/layout/header.php';
 
