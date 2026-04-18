@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\Response;
 use App\Models\Aluno;
 use App\Models\Nota;
 
@@ -32,8 +33,7 @@ class AlunoController
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
-            header('Location: /alunos?error=campos_obrigatorios');
-            exit;
+            Response::redirect('/alunos?error=campos_obrigatorios');
         }
 
         Aluno::create([
@@ -43,8 +43,7 @@ class AlunoController
             'criado_em' => date('Y-m-d H:i:s')
         ]);
 
-        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/alunos'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 
     public function show($id): void
@@ -72,8 +71,7 @@ class AlunoController
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
-            header("Location: /alunos/$id/edit?error=campos_obrigatorios");
-            exit;
+            Response::redirect('/alunos');
         }
 
         Aluno::update($id, [
@@ -82,8 +80,7 @@ class AlunoController
             'turma_id' => $turma_id
         ]);
 
-        header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '/alunos'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 
     public function destroy($id): void
@@ -91,7 +88,6 @@ class AlunoController
         Nota::deleteWhere('aluno_id', $id);
         Aluno::delete($id);
 
-        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/alunos'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 }

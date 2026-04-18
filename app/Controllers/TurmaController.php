@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\Response;
 use App\Models\Aluno;
 use App\Models\Nota;
 use App\Models\Turma;
@@ -32,8 +33,7 @@ class TurmaController
         $ano  = trim($_POST['ano'] ?? '');
 
         if (empty($nome) || empty($ano)) {
-            header('Location: /turmas?error=campos_obrigatorios');
-            exit;
+            Response::redirect('/turmas?error=campos_obrigatorios');
         }
 
         Turma::create([
@@ -41,8 +41,7 @@ class TurmaController
             'ano'  => $ano
         ]);
 
-        header('Location: /turmas');
-        exit;
+        Response::redirect('/turmas');
     }
 
     public function show($id): void
@@ -69,8 +68,7 @@ class TurmaController
         $ano  = trim($_POST['ano'] ?? '');
 
         if (empty($nome) || empty($ano)) {
-            header("Location: /turmas/$id/edit?error=campos_obrigatorios");
-            exit;
+            Response::redirect('/turmas/$id/edit?error=campos_obrigatorios');
         }
 
         Turma::update($id, [
@@ -78,8 +76,7 @@ class TurmaController
             'ano'   => $ano
         ]);
 
-        header("Location: /turmas");
-        exit;
+        Response::redirect('/turmas');
     }
 
     public function destroy($id): void
@@ -89,7 +86,6 @@ class TurmaController
         Aluno::deleteWhere('turma_id', $id);
         Turma::delete($id);
 
-        header('Location: /turmas');
-        exit;
+        Response::redirect('/turmas');
     }
 }

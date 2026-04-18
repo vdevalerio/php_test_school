@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\Response;
 use App\Models\Nota;
 
 class NotaController
@@ -32,8 +33,7 @@ class NotaController
         $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            header('Location: /notas?error=campos_obrigatorios');
-            exit;
+            Response::redirect('/notas?error=campos_obrigatorios');
         }
 
         Nota::create([
@@ -43,8 +43,7 @@ class NotaController
             'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
-        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/notas'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
     public function edit($id): void
@@ -65,8 +64,7 @@ class NotaController
         $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            header("Location: /notas/$id/edit?error=campos_obrigatorios");
-            exit;
+            Response::redirect("/notas/$id/edit?error=campos_obrigatorios");
         }
 
         Nota::update($id, [
@@ -76,15 +74,13 @@ class NotaController
             'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
-        header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '/notas'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
     public function destroy($id): void
     {
         Nota::delete($id);
 
-        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/notas'));
-        exit;
+        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 }
