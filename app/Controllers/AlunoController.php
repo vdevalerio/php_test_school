@@ -8,86 +8,86 @@ use App\Models\Nota;
 
 class AlunoController
 {
-    public function index(): void
+    public function index(): Response
     {
-        $alunos     = Aluno::all();
-        $heading    = 'Alunos';
-
-        require "../app/Views/alunos/index.php";
+        return Response::view('alunos/index', [
+            'alunos'  => Aluno::all(),
+            'heading' => 'Alunos',
+        ]);
     }
 
-    public function create(): void
+    public function create(): Response
     {
-        $action      = '/alunos';
-        $method      = 'POST';
-        $aluno       = null;
-        $submitLabel = 'Criar aluno';
-
-        require "../app/Views/alunos/_form.php";
+        return Response::view('alunos/_form', [
+            'action'      => '/alunos',
+            'method'      => 'POST',
+            'aluno'       => null,
+            'submitLabel' => 'Criar aluno',
+        ]);
     }
 
-    public function store(): void
+    public function store(): Response
     {
         $nome     = trim($_POST['nome'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
-            Response::redirect('/alunos?error=campos_obrigatorios');
+            return Response::redirect('/alunos?error=campos_obrigatorios');
         }
 
         Aluno::create([
             'nome'      => $nome,
             'email'     => $email,
             'turma_id'  => $turma_id,
-            'criado_em' => date('Y-m-d H:i:s')
+            'criado_em' => date('Y-m-d H:i:s'),
         ]);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 
-    public function show($id): void
+    public function show($id): Response
     {
-        $aluno   = Aluno::find($id);
-        $heading = 'Aluno';
-
-        require "../app/Views/alunos/show.php";
+        return Response::view('alunos/show', [
+            'aluno'   => Aluno::find($id),
+            'heading' => 'Aluno',
+        ]);
     }
 
-    public function edit($id): void
+    public function edit($id): Response
     {
-        $aluno       = Aluno::find($id);
-        $action      = "/alunos/$id";
-        $method      = "PUT";
-        $submitLabel = 'Atualizar aluno';
-
-        require "../app/Views/alunos/_form.php";
+        return Response::view('alunos/_form', [
+            'aluno'       => Aluno::find($id),
+            'action'      => "/alunos/$id",
+            'method'      => 'PUT',
+            'submitLabel' => 'Atualizar aluno',
+        ]);
     }
 
-    public function update($id): void
+    public function update($id): Response
     {
         $nome     = trim($_POST['nome'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $turma_id = trim($_POST['turma_id'] ?? '');
 
         if (empty($nome) || empty($email) || empty($turma_id)) {
-            Response::redirect('/alunos');
+            return Response::redirect('/alunos?error=campos_obrigatorios');
         }
 
         Aluno::update($id, [
             'nome'     => $nome,
             'email'    => $email,
-            'turma_id' => $turma_id
+            'turma_id' => $turma_id,
         ]);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 
-    public function destroy($id): void
+    public function destroy($id): Response
     {
         Nota::deleteWhere('aluno_id', $id);
         Aluno::delete($id);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/alunos');
     }
 }

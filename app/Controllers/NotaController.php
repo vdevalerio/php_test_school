@@ -7,25 +7,25 @@ use App\Models\Nota;
 
 class NotaController
 {
-    public function index(): void
+    public function index(): Response
     {
-        $notas     = Nota::all();
-        $heading   = 'Notas';
-
-        require "../app/Views/notas/index.php";
+        return Response::view('notas/index', [
+            'notas'   => Nota::all(),
+            'heading' => 'Notas',
+        ]);
     }
 
-    public function create(): void
+    public function create(): Response
     {
-        $action      = '/notas';
-        $method      = 'POST';
-        $nota        = null;
-        $submitLabel = 'Criar nota';
-
-        require "../app/Views/notas/_form.php";
+        return Response::view('notas/_form', [
+            'action'      => '/notas',
+            'method'      => 'POST',
+            'nota'        => null,
+            'submitLabel' => 'Criar nota',
+        ]);
     }
 
-    public function store(): void
+    public function store(): Response
     {
         $aluno_id        = trim($_POST['aluno_id'] ?? '');
         $disciplina      = trim($_POST['disciplina'] ?? '');
@@ -33,7 +33,7 @@ class NotaController
         $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            Response::redirect('/notas?error=campos_obrigatorios');
+            return Response::redirect('/notas?error=campos_obrigatorios');
         }
 
         Nota::create([
@@ -43,20 +43,20 @@ class NotaController
             'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
-    public function edit($id): void
+    public function edit($id): Response
     {
-        $nota        = Nota::find($id);
-        $action      = "/notas/$id";
-        $method      = "PUT";
-        $submitLabel = 'Atualizar nota';
-
-        require "../app/Views/notas/_form.php";
+        return Response::view('notas/_form', [
+            'nota'        => Nota::find($id),
+            'action'      => "/notas/$id",
+            'method'      => 'PUT',
+            'submitLabel' => 'Atualizar nota',
+        ]);
     }
 
-    public function update($id): void
+    public function update($id): Response
     {
         $aluno_id        = trim($_POST['aluno_id'] ?? '');
         $disciplina      = trim($_POST['disciplina'] ?? '');
@@ -64,7 +64,7 @@ class NotaController
         $data_lancamento = trim($_POST['data_lancamento'] ?? '');
 
         if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            Response::redirect("/notas/$id/edit?error=campos_obrigatorios");
+            return Response::redirect('/notas?error=campos_obrigatorios');
         }
 
         Nota::update($id, [
@@ -74,13 +74,13 @@ class NotaController
             'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
         ]);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
-    public function destroy($id): void
+    public function destroy($id): Response
     {
         Nota::delete($id);
 
-        Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
+        return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 }

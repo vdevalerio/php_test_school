@@ -9,31 +9,31 @@ use App\Models\Turma;
 
 class TurmaController
 {
-    public function index(): void
+    public function index(): Response
     {
-        $turmas     = Turma::all();
-        $heading    = 'Turmas';
-
-        require "../app/Views/turmas/index.php";
+        return Response::view('turmas/index', [
+            'turmas'  => Turma::all(),
+            'heading' => 'Turmas',
+        ]);
     }
 
-    public function create(): void
+    public function create(): Response
     {
-        $action      = '/turmas';
-        $method      = 'POST';
-        $turma       = null;
-        $submitLabel = 'Criar turma';
-
-        require "../app/Views/turmas/_form.php";
+        return Response::view('turmas/_form', [
+            'action'      => '/turmas',
+            'method'      => 'POST',
+            'turma'       => null,
+            'submitLabel' => 'Criar turma',
+        ]);
     }
 
-    public function store(): void
+    public function store(): Response
     {
         $nome = trim($_POST['nome'] ?? '');
         $ano  = trim($_POST['ano'] ?? '');
 
         if (empty($nome) || empty($ano)) {
-            Response::redirect('/turmas?error=campos_obrigatorios');
+            return Response::redirect('/turmas?error=campos_obrigatorios');
         }
 
         Turma::create([
@@ -41,34 +41,36 @@ class TurmaController
             'ano'  => $ano
         ]);
 
-        Response::redirect('/turmas');
+        return Response::redirect('/turmas');
     }
 
-    public function show($id): void
+    public function show($id): Response
     {
-        $turma   = Turma::find($id);
-        $heading = 'Turma';
-
-        require "../app/Views/turmas/show.php";
+        return Response::view('turmas/show', [
+            'turma'   => Turma::find($id),
+            'heading' => 'Turma',
+        ]);
     }
 
-    public function edit($id): void
+    public function edit($id): Response
     {
-        $turma       = Turma::find($id);
-        $action      = "/turmas/$id";
-        $method      = "PUT";
-        $submitLabel = 'Atualizar turma';
-
-        require "../app/Views/turmas/_form.php";
+        return Response::view('turmas/_form', [
+            'turma'       => Turma::find($id),
+            'action'      => "/turmas/$id",
+            'method'      => 'PUT',
+            'submitLabel' => 'Atualizar turma',
+        ]);
     }
 
-    public function update($id): void
+    public function update($id): Response
     {
         $nome = trim($_POST['nome'] ?? '');
         $ano  = trim($_POST['ano'] ?? '');
 
         if (empty($nome) || empty($ano)) {
-            Response::redirect('/turmas/$id/edit?error=campos_obrigatorios');
+            return Response::redirect(
+                "/turmas?error=campos_obrigatorios"
+            );
         }
 
         Turma::update($id, [
@@ -76,16 +78,16 @@ class TurmaController
             'ano'   => $ano
         ]);
 
-        Response::redirect('/turmas');
+        return Response::redirect('/turmas');
     }
 
-    public function destroy($id): void
+    public function destroy($id): Response
     {
         $alunoIds = Aluno::pluck('id', 'turma_id', $id);
         Nota::deleteWhereIn('aluno_id', $alunoIds);
         Aluno::deleteWhere('turma_id', $id);
         Turma::delete($id);
 
-        Response::redirect('/turmas');
+        return Response::redirect('/turmas');
     }
 }
