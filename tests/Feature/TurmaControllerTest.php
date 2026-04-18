@@ -44,6 +44,7 @@ final class TurmaControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $_GET  = [];
         $_POST = [];
     }
 
@@ -81,6 +82,53 @@ final class TurmaControllerTest extends TestCase
         $response = (new TurmaController())->index();
 
         $this->assertSame('Turmas', $response->getData()['heading']);
+    }
+
+    public function test_index_passes_pagination_to_view(): void
+    {
+        $response = (new TurmaController())->index();
+
+        $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_defaults_to_page_1(): void
+    {
+        $response = (new TurmaController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_uses_get_page_parameter(): void
+    {
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createTurma(['nome' => "Turma $i", 'ano' => 2024 + $i]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new TurmaController())->index();
+
+        $this->assertSame(2, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_clamps_invalid_page_to_1(): void
+    {
+        $_GET['page'] = 0;
+
+        $response = (new TurmaController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_second_page_returns_correct_turma_count(): void
+    {
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createTurma(['nome' => "Turma $i", 'ano' => 2024 + $i]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new TurmaController())->index();
+
+        $this->assertCount(5, $response->getData()['turmas']);
     }
 
     // -------------------------------------------------------------------------

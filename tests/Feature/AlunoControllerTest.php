@@ -41,6 +41,7 @@ final class AlunoControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $_GET                         = [];
         $_POST                        = [];
         $_SERVER['HTTP_REFERER']      = '/alunos';
     }
@@ -80,6 +81,73 @@ final class AlunoControllerTest extends TestCase
         $response = (new AlunoController())->index();
 
         $this->assertSame('Alunos', $response->getData()['heading']);
+    }
+
+    public function test_index_passes_pagination_to_view(): void
+    {
+        $response = (new AlunoController())->index();
+
+        $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_pagination_has_required_keys(): void
+    {
+        $response   = (new AlunoController())->index();
+        $pagination = $response->getData()['pagination'];
+
+        $this->assertArrayHasKey('data', $pagination);
+        $this->assertArrayHasKey('total', $pagination);
+        $this->assertArrayHasKey('per_page', $pagination);
+        $this->assertArrayHasKey('current_page', $pagination);
+        $this->assertArrayHasKey('last_page', $pagination);
+    }
+
+    public function test_index_defaults_to_page_1(): void
+    {
+        $response = (new AlunoController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_uses_get_page_parameter(): void
+    {
+        $turmaId = $this->createTurma();
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createAluno($turmaId, [
+                'nome'  => "Aluno $i",
+                'email' => "aluno$i@example.com",
+            ]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new AlunoController())->index();
+
+        $this->assertSame(2, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_clamps_invalid_page_to_1(): void
+    {
+        $_GET['page'] = -5;
+
+        $response = (new AlunoController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_second_page_returns_correct_aluno_count(): void
+    {
+        $turmaId = $this->createTurma();
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createAluno($turmaId, [
+                'nome'  => "Aluno $i",
+                'email' => "aluno$i@example.com",
+            ]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new AlunoController())->index();
+
+        $this->assertCount(5, $response->getData()['alunos']);
     }
 
     // -------------------------------------------------------------------------

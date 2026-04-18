@@ -38,6 +38,7 @@ final class NotaControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $_GET                    = [];
         $_POST                   = [];
         $_SERVER['HTTP_REFERER'] = '/notas';
     }
@@ -77,6 +78,55 @@ final class NotaControllerTest extends TestCase
         $response = (new NotaController())->index();
 
         $this->assertSame('Notas', $response->getData()['heading']);
+    }
+
+    public function test_index_passes_pagination_to_view(): void
+    {
+        $response = (new NotaController())->index();
+
+        $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_defaults_to_page_1(): void
+    {
+        $response = (new NotaController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_uses_get_page_parameter(): void
+    {
+        $alunoId = $this->createAluno();
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createNota($alunoId, ['disciplina' => "Disciplina $i"]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new NotaController())->index();
+
+        $this->assertSame(2, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_clamps_invalid_page_to_1(): void
+    {
+        $_GET['page'] = -1;
+
+        $response = (new NotaController())->index();
+
+        $this->assertSame(1, $response->getData()['pagination']['current_page']);
+    }
+
+    public function test_index_second_page_returns_correct_nota_count(): void
+    {
+        $alunoId = $this->createAluno();
+        for ($i = 1; $i <= 15; $i++) {
+            $this->createNota($alunoId, ['disciplina' => "Disciplina $i"]);
+        }
+        $_GET['page'] = 2;
+
+        $response = (new NotaController())->index();
+
+        $this->assertCount(5, $response->getData()['notas']);
     }
 
     // -------------------------------------------------------------------------
