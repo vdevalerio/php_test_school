@@ -2,7 +2,6 @@
 
 ## TODOs
 
-- [ ] Adicionar testes
 - [ ] Adicionar paginação
 - [ ] Adicionar ordenação
 - [ ] Adicionar filtros
