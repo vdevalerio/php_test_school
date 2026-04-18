@@ -14,4 +14,15 @@
             <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
+
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+        </include>
+        <exclude>
+            <directory>vendor</directory>
+            <directory>tests</directory>
+            <directory>database</directory>
+        </exclude>
+    </source>
 </phpunit>
