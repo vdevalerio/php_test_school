@@ -11,7 +11,17 @@
         <?php foreach ($rows as $row): ?>
             <tr>
                 <?php foreach ($row['cells'] as $cell): ?>
-                    <td><?= $cell ?></td>
+                    <?php if (
+                        is_array($cell)
+                        && isset($cell['format'])
+                        && $cell['value'] instanceof DateTime
+                    ): ?>
+                        <td><?= $cell['value']->format($cell['format']) ?></td>
+                    <?php elseif ($cell instanceof DateTime): ?>
+                        <td><?= $cell->format('d/m/Y H:i') ?></td>
+                    <?php else: ?>
+                        <td><?= $cell ?></td>
+                    <?php endif; ?>
                 <?php endforeach; ?>
                 <td><?php component('action-menu', $row['actions']) ?></td>
             </tr>
