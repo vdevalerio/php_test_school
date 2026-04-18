@@ -34,17 +34,16 @@ $canGoNext = $current < $last;
         &laquo; Anterior
     </a>
 
-    <?php for ($page = 1; $page <= $last; $page++): ?>
-        <?php $query['page'] = $page; ?>
-        <a href="<?= htmlspecialchars('?' . http_build_query($query)) ?>"
-            class="
-                pagination__btn
-                <?= $page === $current ? 'pagination__btn--active' : '' ?>
-            "
-        >
-            <?= $page ?>
-        </a>
-    <?php endfor; ?>
+    <select id="page" name="page" onchange="window.location.href = this.value">
+        <?php for ($page = 1; $page <= $last; $page++): ?>
+            <?php $query['page'] = $page; ?>
+            <option value="?<?= htmlspecialchars(http_build_query($query)) ?>"
+                <?= $page == $current ? 'selected' : '' ?>
+            >
+                <?= $page ?>
+            </option>
+        <?php endfor; ?>
+    </select>
 
     <a href="<?= $canGoNext ? htmlspecialchars($nextUrl) : '#' ?>"
         <?= !$canGoNext ? 'aria-disabled="true"' : '' ?>

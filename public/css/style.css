@@ -188,12 +188,6 @@
     text-decoration: none;
 }
 
-a.pagination__btn--active {
-    background: var(--accent);
-    border-color: var(--text);
-    color: var(--disabled);
-}
-
 .pagination__btn--disabled {
     opacity: 0.4;
     pointer-events: none;
