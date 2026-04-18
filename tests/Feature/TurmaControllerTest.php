@@ -48,6 +48,161 @@ final class TurmaControllerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // index
+    // -------------------------------------------------------------------------
+
+    public function test_index_returns_view_response(): void
+    {
+        $response = (new TurmaController())->index();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_index_returns_correct_view(): void
+    {
+        $response = (new TurmaController())->index();
+
+        $this->assertSame('turmas/index', $response->getView());
+    }
+
+    public function test_index_passes_turmas_to_view(): void
+    {
+        $this->createTurma();
+
+        $response = (new TurmaController())->index();
+        $data     = $response->getData();
+
+        $this->assertArrayHasKey('turmas', $data);
+        $this->assertCount(1, $data['turmas']);
+    }
+
+    public function test_index_passes_heading_to_view(): void
+    {
+        $response = (new TurmaController())->index();
+
+        $this->assertSame('Turmas', $response->getData()['heading']);
+    }
+
+    // -------------------------------------------------------------------------
+    // create
+    // -------------------------------------------------------------------------
+
+    public function test_create_returns_view_response(): void
+    {
+        $response = (new TurmaController())->create();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_create_returns_correct_view(): void
+    {
+        $response = (new TurmaController())->create();
+
+        $this->assertSame('turmas/_form', $response->getView());
+    }
+
+    public function test_create_passes_correct_action_to_view(): void
+    {
+        $response = (new TurmaController())->create();
+
+        $this->assertSame('/turmas', $response->getData()['action']);
+    }
+
+    public function test_create_passes_post_method_to_view(): void
+    {
+        $response = (new TurmaController())->create();
+
+        $this->assertSame('POST', $response->getData()['method']);
+    }
+
+    public function test_create_passes_null_turma_to_view(): void
+    {
+        $response = (new TurmaController())->create();
+
+        $this->assertNull($response->getData()['turma']);
+    }
+
+    // -------------------------------------------------------------------------
+    // show
+    // -------------------------------------------------------------------------
+
+    public function test_show_returns_view_response(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->show($id);
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_show_returns_correct_view(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->show($id);
+
+        $this->assertSame('turmas/show', $response->getView());
+    }
+
+    public function test_show_passes_correct_turma_to_view(): void
+    {
+        $id       = $this->createTurma(['nome' => '5A', 'ano' => 2024]);
+        $response = (new TurmaController())->show($id);
+
+        $this->assertSame('5A', $response->getData()['turma']->nome);
+    }
+
+    public function test_show_passes_heading_to_view(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->show($id);
+
+        $this->assertSame('Turma', $response->getData()['heading']);
+    }
+
+    // -------------------------------------------------------------------------
+    // edit
+    // -------------------------------------------------------------------------
+
+    public function test_edit_returns_view_response(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->edit($id);
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_edit_returns_correct_view(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->edit($id);
+
+        $this->assertSame('turmas/_form', $response->getView());
+    }
+
+    public function test_edit_passes_correct_turma_to_view(): void
+    {
+        $id       = $this->createTurma(['nome' => '5A', 'ano' => 2024]);
+        $response = (new TurmaController())->edit($id);
+
+        $this->assertSame('5A', $response->getData()['turma']->nome);
+    }
+
+    public function test_edit_passes_correct_action_to_view(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->edit($id);
+
+        $this->assertSame("/turmas/$id", $response->getData()['action']);
+    }
+
+    public function test_edit_passes_put_method_to_view(): void
+    {
+        $id       = $this->createTurma();
+        $response = (new TurmaController())->edit($id);
+
+        $this->assertSame('PUT', $response->getData()['method']);
+    }
+
+    // -------------------------------------------------------------------------
     // store
     // -------------------------------------------------------------------------
 

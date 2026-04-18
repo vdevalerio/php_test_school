@@ -46,6 +46,171 @@ final class AlunoControllerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // index
+    // -------------------------------------------------------------------------
+
+    public function test_index_returns_view_response(): void
+    {
+        $response = (new AlunoController())->index();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_index_returns_correct_view(): void
+    {
+        $response = (new AlunoController())->index();
+
+        $this->assertSame('alunos/index', $response->getView());
+    }
+
+    public function test_index_passes_alunos_to_view(): void
+    {
+        $turmaId = $this->createTurma();
+        $this->createAluno($turmaId);
+
+        $response = (new AlunoController())->index();
+        $data     = $response->getData();
+
+        $this->assertArrayHasKey('alunos', $data);
+        $this->assertCount(1, $data['alunos']);
+    }
+
+    public function test_index_passes_heading_to_view(): void
+    {
+        $response = (new AlunoController())->index();
+
+        $this->assertSame('Alunos', $response->getData()['heading']);
+    }
+
+    // -------------------------------------------------------------------------
+    // create
+    // -------------------------------------------------------------------------
+
+    public function test_create_returns_view_response(): void
+    {
+        $response = (new AlunoController())->create();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_create_returns_correct_view(): void
+    {
+        $response = (new AlunoController())->create();
+
+        $this->assertSame('alunos/_form', $response->getView());
+    }
+
+    public function test_create_passes_correct_action_to_view(): void
+    {
+        $response = (new AlunoController())->create();
+
+        $this->assertSame('/alunos', $response->getData()['action']);
+    }
+
+    public function test_create_passes_post_method_to_view(): void
+    {
+        $response = (new AlunoController())->create();
+
+        $this->assertSame('POST', $response->getData()['method']);
+    }
+
+    public function test_create_passes_null_aluno_to_view(): void
+    {
+        $response = (new AlunoController())->create();
+
+        $this->assertNull($response->getData()['aluno']);
+    }
+
+    // -------------------------------------------------------------------------
+    // show
+    // -------------------------------------------------------------------------
+
+    public function test_show_returns_view_response(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->show($id);
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_show_returns_correct_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->show($id);
+
+        $this->assertSame('alunos/show', $response->getView());
+    }
+
+    public function test_show_passes_correct_aluno_to_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId, ['nome' => 'João']);
+        $response = (new AlunoController())->show($id);
+
+        $this->assertSame('João', $response->getData()['aluno']->nome);
+    }
+
+    public function test_show_passes_heading_to_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->show($id);
+
+        $this->assertSame('Aluno', $response->getData()['heading']);
+    }
+
+    // -------------------------------------------------------------------------
+    // edit
+    // -------------------------------------------------------------------------
+
+    public function test_edit_returns_view_response(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->edit($id);
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_edit_returns_correct_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->edit($id);
+
+        $this->assertSame('alunos/_form', $response->getView());
+    }
+
+    public function test_edit_passes_correct_aluno_to_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId, ['nome' => 'João']);
+        $response = (new AlunoController())->edit($id);
+
+        $this->assertSame('João', $response->getData()['aluno']->nome);
+    }
+
+    public function test_edit_passes_correct_action_to_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->edit($id);
+
+        $this->assertSame("/alunos/$id", $response->getData()['action']);
+    }
+
+    public function test_edit_passes_put_method_to_view(): void
+    {
+        $turmaId  = $this->createTurma();
+        $id       = $this->createAluno($turmaId);
+        $response = (new AlunoController())->edit($id);
+
+        $this->assertSame('PUT', $response->getData()['method']);
+    }
+
+    // -------------------------------------------------------------------------
     // store
     // -------------------------------------------------------------------------
 

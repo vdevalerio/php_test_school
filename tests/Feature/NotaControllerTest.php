@@ -43,6 +43,131 @@ final class NotaControllerTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // index
+    // -------------------------------------------------------------------------
+
+    public function test_index_returns_view_response(): void
+    {
+        $response = (new NotaController())->index();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_index_returns_correct_view(): void
+    {
+        $response = (new NotaController())->index();
+
+        $this->assertSame('notas/index', $response->getView());
+    }
+
+    public function test_index_passes_notas_to_view(): void
+    {
+        $alunoId = $this->createAluno();
+        $this->createNota($alunoId);
+
+        $response = (new NotaController())->index();
+        $data     = $response->getData();
+
+        $this->assertArrayHasKey('notas', $data);
+        $this->assertCount(1, $data['notas']);
+    }
+
+    public function test_index_passes_heading_to_view(): void
+    {
+        $response = (new NotaController())->index();
+
+        $this->assertSame('Notas', $response->getData()['heading']);
+    }
+
+    // -------------------------------------------------------------------------
+    // create
+    // -------------------------------------------------------------------------
+
+    public function test_create_returns_view_response(): void
+    {
+        $response = (new NotaController())->create();
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_create_returns_correct_view(): void
+    {
+        $response = (new NotaController())->create();
+
+        $this->assertSame('notas/_form', $response->getView());
+    }
+
+    public function test_create_passes_correct_action_to_view(): void
+    {
+        $response = (new NotaController())->create();
+
+        $this->assertSame('/notas', $response->getData()['action']);
+    }
+
+    public function test_create_passes_post_method_to_view(): void
+    {
+        $response = (new NotaController())->create();
+
+        $this->assertSame('POST', $response->getData()['method']);
+    }
+
+    public function test_create_passes_null_nota_to_view(): void
+    {
+        $response = (new NotaController())->create();
+
+        $this->assertNull($response->getData()['nota']);
+    }
+
+    // -------------------------------------------------------------------------
+    // edit
+    // -------------------------------------------------------------------------
+
+    public function test_edit_returns_view_response(): void
+    {
+        $alunoId  = $this->createAluno();
+        $id       = $this->createNota($alunoId);
+        $response = (new NotaController())->edit($id);
+
+        $this->assertTrue($response->isView());
+    }
+
+    public function test_edit_returns_correct_view(): void
+    {
+        $alunoId  = $this->createAluno();
+        $id       = $this->createNota($alunoId);
+        $response = (new NotaController())->edit($id);
+
+        $this->assertSame('notas/_form', $response->getView());
+    }
+
+    public function test_edit_passes_correct_nota_to_view(): void
+    {
+        $alunoId  = $this->createAluno();
+        $id       = $this->createNota($alunoId, ['disciplina' => 'Matemática']);
+        $response = (new NotaController())->edit($id);
+
+        $this->assertSame('Matemática', $response->getData()['nota']->disciplina);
+    }
+
+    public function test_edit_passes_correct_action_to_view(): void
+    {
+        $alunoId  = $this->createAluno();
+        $id       = $this->createNota($alunoId);
+        $response = (new NotaController())->edit($id);
+
+        $this->assertSame("/notas/$id", $response->getData()['action']);
+    }
+
+    public function test_edit_passes_put_method_to_view(): void
+    {
+        $alunoId  = $this->createAluno();
+        $id       = $this->createNota($alunoId);
+        $response = (new NotaController())->edit($id);
+
+        $this->assertSame('PUT', $response->getData()['method']);
+    }
+
+    // -------------------------------------------------------------------------
     // store
     // -------------------------------------------------------------------------
 
