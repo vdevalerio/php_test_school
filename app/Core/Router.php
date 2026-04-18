@@ -52,32 +52,17 @@ class Router
 
     public function dispatch(): void
     {
-        $requestUri = parse_url(
-            $_SERVER['REQUEST_URI'],
-            PHP_URL_PATH
-        );
-
-        $requestMethod = strtoupper(
-            $_POST['_method'] ?? $_SERVER['REQUEST_METHOD']
-        );
+        $requestUri     = $this->resolveUri();
+        $requestMethod  = $this->resolveMethod();
 
         foreach ($this->routes as $route) {
-            $pattern = $this->toRegex($route['uri']);
-
-            $methodMatches = $route['method'] === $requestMethod;
-            $uriMatches    = preg_match($pattern, $requestUri, $matches);
-
-            if ($methodMatches && $uriMatches) {
-                $params = array_filter(
-                    $matches,
-                    'is_string',
-                    ARRAY_FILTER_USE_KEY
-                );
-
-                [$controller, $method] = explode('@', $route['action']);
-                $class = "App\\Controllers\\$controller";
-
-                (new $class)->$method(...array_values($params));
+            if ($this->matchesRoute(
+                $route,
+                $requestMethod,
+                $requestUri,
+                $matches
+            )) {
+                $this->callAction($route['action'], $matches);
                 return;
             }
         }
@@ -85,11 +70,48 @@ class Router
         $this->abort(404);
     }
 
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
     private function toRegex(string $uri): string
     {
         $pattern = preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $uri);
 
         return '#^' . $pattern . '$#';
+    }
+
+    private function resolveUri(): string
+    {
+        return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    }
+
+    public function resolveMethod(): string
+    {
+        return strtoupper($_POST['_method'] ?? $_SERVER['REQUEST_METHOD']);
+    }
+
+    private function matchesRoute(
+        array $route,
+        string $method,
+        string $uri,
+        ?array &$matches
+        ): bool
+    {
+        $pattern = $this->toRegex($route['uri']);
+
+        return $route['method'] === $method
+            && preg_match($pattern, $uri, $matches);
+    }
+
+    private function callAction(string $action, array $matches): void
+    {
+        $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+
+        [$controller, $method] = explode('@', $action);
+        $class = "App\\Controllers\\$controller";
+
+        (new $class)->$method(...array_values($params));
     }
 
     private function abort(int $code = 404): void
