@@ -167,3 +167,34 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 1rem;
+}
+
+.pagination__info {
+    margin-right: auto;
+    font-size: 0.875rem;
+    color: var(--text);
+}
+
+.pagination__btn {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+a.pagination__btn--active {
+    background: var(--accent);
+    border-color: var(--text);
+    color: var(--disabled);
+}
+
+.pagination__btn--disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}

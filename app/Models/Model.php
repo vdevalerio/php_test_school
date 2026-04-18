@@ -61,6 +61,45 @@ abstract class Model
         }, $rows);
     }
 
+    public static function count(): int
+    {
+        $instance = new static();
+        return (int) $instance->db->query(
+            "SELECT COUNT(*) FROM " . static::$table
+        )->fetchColumn();
+    }
+
+    public static function paginate(int $page = 1, int $perPage = 10): array
+    {
+        $instance = new static();
+        $total    = static::count();
+        $offset   = ($page - 1) * $perPage;
+        $sql      = sprintf(
+            'SELECT * FROM %s LIMIT %s OFFSET %s',
+            static::$table,
+            $perPage,
+            $offset
+        );
+
+        $rows = $instance->db->query($sql)->fetchAll();
+
+        $rows = array_map(function (array $data) {
+            $obj = new static();
+            foreach ($data as $key => $value) {
+                $obj->$key = $obj->castValue($key, $value);
+            }
+            return $obj;
+        }, $rows);
+
+        return [
+            'data'         => $rows,
+            'total'        => $total,
+            'per_page'     => $perPage,
+            'current_page' => $page,
+            'last_page'    => (int) ceil($total / $perPage),
+        ];
+    }
+
     public static function find(int $id): static|false
     {
         $instance = new static();

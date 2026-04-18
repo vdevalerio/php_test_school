@@ -28,3 +28,7 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<?php if (!empty($pagination)): ?>
+    <?php component('pagination', ['pagination' => $pagination]) ?>
+<?php endif; ?>
