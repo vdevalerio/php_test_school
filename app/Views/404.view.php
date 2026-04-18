@@ -1,11 +1,11 @@
 <?php
 
-include '../app/Views/layout/header.php';
+include __DIR__ . '/layout/header.php';
 
-include '../app/Views/layout/nav.php';
+include __DIR__ . '/layout/nav.php';
 
 ?>
 
 <h1>Página não encontrada</h1>
 
-<?php include '../app/Views/layout/footer.php'; ?>
+<?php include __DIR__ . '/layout/footer.php'; ?>
