@@ -134,6 +134,11 @@ abstract class Model
         };
     }
 
+    public function cast(string $key, mixed $value): mixed
+    {
+        return $this->castValue($key, $value);
+    }
+
     public static function create(array $data): int
     {
         $instance     = new static();
