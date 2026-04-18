@@ -3,6 +3,7 @@
 ## TODOs
 
 - [ ] Adicionar paginação
+    - [ ] Preciso de um query builder pra adicionar paginacao na interna das models
 - [ ] Adicionar ordenação
 - [ ] Adicionar filtros
 - [ ] Formatar date/datetime nas tabelas e datepicker
