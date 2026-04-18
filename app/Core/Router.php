@@ -109,9 +109,12 @@ class Router
         $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
 
         [$controller, $method] = explode('@', $action);
-        $class = "App\\Controllers\\$controller";
+        $class    = "App\\Controllers\\$controller";
+        $response = (new $class)->$method(...array_values($params));
 
-        (new $class)->$method(...array_values($params));
+        if ($response instanceof Response) {
+            $response->send();
+        }
     }
 
     private function abort(int $code = 404): void
