@@ -8,7 +8,15 @@ RUN apt-get update && apt-get install -y \
 
 # Xdebug for coverage
 RUN pecl install xdebug && docker-php-ext-enable xdebug
-RUN echo "xdebug.mode=off" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN { \
+    echo "xdebug.mode=off"; \
+    echo "xdebug.show_exception_trace=0"; \
+    } >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && { \
+    echo "zend.assertions=1"; \
+    echo "assert.exception=1"; \
+    echo "memory_limit=-1"; \
+    } >> /usr/local/etc/php/conf.d/custom.ini
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
