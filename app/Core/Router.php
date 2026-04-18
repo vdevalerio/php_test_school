@@ -121,6 +121,11 @@ class Router
     {
         http_response_code($code);
         require __DIR__ . "/../../app/Views/{$code}.view.php";
+        $this->terminate();
+    }
+
+    protected function terminate(): never
+    {
         die();
     }
 }

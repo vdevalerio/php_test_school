@@ -32,15 +32,20 @@ class Response
         if ($this->redirectUrl !== null) {
             http_response_code($this->statusCode);
             header("Location: {$this->redirectUrl}");
-            exit;
+            $this->terminate();
         }
 
         if ($this->view !== null) {
             extract($this->data);
-            require "../app/Views/{$this->view}.php";
-            exit;
+            require __DIR__ . "/../../app/Views/{$this->view}.php";
+            $this->terminate();
         }
 
+        $this->terminate();
+    }
+
+    protected function terminate(): never
+    {
         exit;
     }
 
