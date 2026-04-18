@@ -5,7 +5,6 @@ function dd(mixed ...$vars): never
     $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $file  = $trace['file'] ?? 'unknown file';
     $line  = $trace['line'] ?? 0;
-    $function = $trace['function'] ?? 'unknown function';
 
     if (PHP_SAPI === 'cli') {
         echo "\n\033[1;33m{$file}:{$line}\033[0m\n";
