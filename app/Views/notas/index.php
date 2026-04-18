@@ -44,7 +44,8 @@ component('table', [
         'Nota',
         'Data'
     ],
-    'rows' => $rows
+    'rows' => $rows,
+    'pagination' => $pagination,
 ]);
 ?>
 

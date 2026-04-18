@@ -11,9 +11,13 @@ class TurmaController
 {
     public function index(): Response
     {
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $result = Turma::paginate($page, 10);
+
         return Response::view('turmas/index', [
-            'turmas'  => Turma::all(),
-            'heading' => 'Turmas',
+            'turmas'     => $result['data'],
+            'pagination' => $result,
+            'heading'    => 'Turmas',
         ]);
     }
 

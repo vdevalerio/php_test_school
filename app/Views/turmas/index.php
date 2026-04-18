@@ -27,7 +27,8 @@ $rows = array_map(function($turma) {
 
 component('table', [
     'columns' => ['#', 'Nome', 'Ano'],
-    'rows' => $rows
+    'rows' => $rows,
+    'pagination' => $pagination,
 ]);
 ?>
 

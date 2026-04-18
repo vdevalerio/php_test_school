@@ -32,7 +32,8 @@ $rows = array_map(function($aluno) {
 
 component('table', [
     'columns' => ['#', 'Nome', 'Email', 'Turma', 'Criado Em'],
-    'rows' => $rows
+    'rows' => $rows,
+    'pagination' => $pagination,
 ]);
 
 ?>

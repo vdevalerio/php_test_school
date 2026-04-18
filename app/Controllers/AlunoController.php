@@ -10,9 +10,13 @@ class AlunoController
 {
     public function index(): Response
     {
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $result = Aluno::paginate($page, 10);
+
         return Response::view('alunos/index', [
-            'alunos'  => Aluno::all(),
-            'heading' => 'Alunos',
+            'alunos'     => $result['data'],
+            'pagination' => $result,
+            'heading'    => 'Alunos',
         ]);
     }
 
