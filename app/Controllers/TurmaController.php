@@ -50,9 +50,15 @@ class TurmaController
 
     public function show($id): Response
     {
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $turma  = Turma::find($id);
+        $alunos = $turma->alunos()->paginate($page, 10);
+
         return Response::view('turmas/show', [
-            'turma'   => Turma::find($id),
-            'heading' => 'Turma',
+            'turma'      => $turma,
+            'alunos'     => $alunos['data'],
+            'pagination' => $alunos,
+            'heading'    => 'Turma',
         ]);
     }
 

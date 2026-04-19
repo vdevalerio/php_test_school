@@ -9,7 +9,6 @@ include __DIR__ . '/../layout/nav.php';
  * @var Aluno $aluno
  */
 
-$notas = $aluno->notas()->get();
 $title = "#{$aluno->id} - {$aluno->nome} - {$aluno->turma()->nome}";
 ?>
 
@@ -42,8 +41,9 @@ $rows = array_map(function($nota) {
 }, $notas);
 
 component('table', [
-    'columns' => ['#', 'Disciplina', 'Nota', 'Data de Lançamento'],
-    'rows' => $rows
+    'columns'    => ['#', 'Disciplina', 'Nota', 'Data de Lançamento'],
+    'rows'       => $rows,
+    'pagination' => $pagination,
 ]);
 ?>
 

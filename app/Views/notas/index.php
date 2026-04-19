@@ -36,7 +36,7 @@ $rows = array_map(function($nota) {
 }, $notas);
 
 component('table', [
-    'columns' => [
+    'columns'    => [
         '#',
         'Aluno',
         'Turma',
@@ -44,7 +44,7 @@ component('table', [
         'Nota',
         'Data'
     ],
-    'rows' => $rows,
+    'rows'       => $rows,
     'pagination' => $pagination,
 ]);
 ?>

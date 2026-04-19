@@ -52,8 +52,14 @@ class AlunoController
 
     public function show($id): Response
     {
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $aluno  = Aluno::find($id);
+        $notas  = $aluno->notas()->paginate($page, 10);
+
         return Response::view('alunos/show', [
-            'aluno'   => Aluno::find($id),
+            'aluno'      => $aluno,
+            'notas'      => $notas['data'],
+            'pagination' => $notas,
             'heading' => 'Aluno',
         ]);
     }

@@ -31,8 +31,8 @@ $rows = array_map(function($aluno) {
 }, $alunos);
 
 component('table', [
-    'columns' => ['#', 'Nome', 'Email', 'Turma', 'Criado Em'],
-    'rows' => $rows,
+    'columns'    => ['#', 'Nome', 'Email', 'Turma', 'Criado Em'],
+    'rows'       => $rows,
     'pagination' => $pagination,
 ]);
 
