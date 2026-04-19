@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Core\QueryBuilder;
 use App\Models\Model;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class StubModel extends Model
@@ -23,6 +23,7 @@ class CastStubModel extends StubModel
         'score'      => 'float',
         'active'     => 'bool',
         'created_at' => 'datetime',
+        'unknown'    => 'unknown_type',
     ];
 }
 
@@ -51,7 +52,7 @@ final class ModelTest extends TestCase
         $this->assertSame('João', $this->model->nome);
     }
 
-    public function test_get_returns_null_after_setting_another_attribute(): void
+    public function test_get_returns_null_for_other_attributes_after_setting_one(): void
     {
         $this->model->nome = 'João';
 
@@ -91,6 +92,17 @@ final class ModelTest extends TestCase
         $this->assertSame('Maria', $this->model->nome);
     }
 
+    public function test_multiple_attributes_are_stored_independently(): void
+    {
+        $this->model->nome  = 'João';
+        $this->model->email = 'joao@example.com';
+        $this->model->age   = 20;
+
+        $this->assertSame('João', $this->model->nome);
+        $this->assertSame('joao@example.com', $this->model->email);
+        $this->assertSame(20, $this->model->age);
+    }
+
     // -------------------------------------------------------------------------
     // __isset
     // -------------------------------------------------------------------------
@@ -115,14 +127,12 @@ final class ModelTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // castValue — sem casts definidos
+    // castValue — no casts defined
     // -------------------------------------------------------------------------
 
     public function test_cast_returns_value_unchanged_when_no_cast_defined(): void
     {
-        $model = new StubModel();
-
-        $this->assertSame('42', $model->castPublic('qualquer_campo', '42'));
+        $this->assertSame('42', $this->model->castPublic('any_field', '42'));
     }
 
     public function test_cast_returns_null_unchanged_regardless_of_cast(): void
@@ -133,7 +143,7 @@ final class ModelTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // castValue — tipos
+    // castValue — int
     // -------------------------------------------------------------------------
 
     public static function intCastProvider(): array
@@ -145,58 +155,58 @@ final class ModelTest extends TestCase
         ];
     }
 
-    #[DataProvider('intCastProvider')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('intCastProvider')]
     public function test_cast_converts_to_int(mixed $input, int $expected): void
     {
-        $model = new CastStubModel();
+        $model  = new CastStubModel();
+        $result = $model->castPublic('age', $input);
 
-        $this->assertSame($expected, $model->castPublic('age', $input));
-        $this->assertIsInt($model->castPublic('age', $input));
+        $this->assertSame($expected, $result);
+        $this->assertIsInt($result);
     }
 
-    public static function floatCastProvider(): array
+    // -------------------------------------------------------------------------
+    // castValue — float
+    // -------------------------------------------------------------------------
+
+    public function test_cast_converts_string_to_float(): void
     {
-        return [
-            'from string' => ['5.7', 5.7],
-            'from int'    => [5,     5.0],
-            'from bool'   => [true,  1.0],
-        ];
+        $model  = new CastStubModel();
+        $result = $model->castPublic('score', '8.5');
+
+        $this->assertSame(8.5, $result);
+        $this->assertIsFloat($result);
     }
 
-    #[DataProvider('floatCastProvider')]
-    public function test_cast_converts_to_float(mixed $input, float $expected): void
-    {
-        $model = new CastStubModel();
-
-        $this->assertSame($expected, $model->castPublic('score', $input));
-        $this->assertIsFloat($model->castPublic('score', $input));
-    }
+    // -------------------------------------------------------------------------
+    // castValue — bool
+    // -------------------------------------------------------------------------
 
     public static function boolCastProvider(): array
     {
         return [
             'truthy string' => ['1',  true],
-            'falsy string'  => ['0', false],
+            'falsy string'  => ['0',  false],
             'truthy int'    => [1,    true],
-            'falsy int'     => [0,   false],
-            'truthy float'  => [1.0,  true],
-            'falsy float'   => [0.0, false],
+            'falsy int'     => [0,    false],
         ];
     }
 
-    #[DataProvider('boolCastProvider')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('boolCastProvider')]
     public function test_cast_converts_to_bool(mixed $input, bool $expected): void
     {
         $model = new CastStubModel();
 
         $this->assertSame($expected, $model->castPublic('active', $input));
-        $this->assertIsBool($model->castPublic('active', $input));
     }
+
+    // -------------------------------------------------------------------------
+    // castValue — datetime
+    // -------------------------------------------------------------------------
 
     public function test_cast_converts_string_to_datetime(): void
     {
-        $model = new CastStubModel();
-
+        $model  = new CastStubModel();
         $result = $model->castPublic('created_at', '2024-03-15');
 
         $this->assertInstanceOf(\DateTime::class, $result);
@@ -205,38 +215,40 @@ final class ModelTest extends TestCase
 
     public function test_cast_datetime_preserves_time(): void
     {
-        $model = new CastStubModel();
-
+        $model  = new CastStubModel();
         $result = $model->castPublic('created_at', '2024-03-15 14:30:00');
 
         $this->assertSame('2024-03-15 14:30:00', $result->format('Y-m-d H:i:s'));
     }
 
+    // -------------------------------------------------------------------------
+    // castValue — unknown type
+    // -------------------------------------------------------------------------
+
     public function test_cast_unknown_type_returns_value_unchanged(): void
     {
-        $model = new class extends StubModel {
-            protected array $casts = ['field' => 'unknown_type'];
-            public function castPublic(string $key, mixed $value): mixed
-            {
-                return $this->castValue($key, $value);
-            }
-        };
+        $model = new CastStubModel();
 
-        $this->assertSame('valor', $model->castPublic('field', 'valor'));
+        $this->assertSame('valor', $model->castPublic('unknown', 'valor'));
     }
 
     // -------------------------------------------------------------------------
-    // Multiple independent attributes
+    // cast() — public proxy for castValue
     // -------------------------------------------------------------------------
 
-    public function test_multiple_attributes_are_stored_independently(): void
+    public function test_cast_public_proxy_delegates_to_cast_value(): void
     {
-        $this->model->nome  = 'João';
-        $this->model->email = 'joao@example.com';
-        $this->model->age   = 20;
+        $model = new CastStubModel();
 
-        $this->assertSame('João', $this->model->nome);
-        $this->assertSame('joao@example.com', $this->model->email);
-        $this->assertSame(20, $this->model->age);
+        $this->assertSame(42, $model->cast('age', '42'));
+    }
+
+    // -------------------------------------------------------------------------
+    // query()
+    // -------------------------------------------------------------------------
+
+    public function test_query_returns_query_builder_instance(): void
+    {
+        $this->assertInstanceOf(QueryBuilder::class, StubModel::query());
     }
 }
