@@ -65,6 +65,31 @@ class QueryBuilder
         return $this;
     }
 
+    public function whereBetween(string $column, mixed $min, mixed $max): static
+    {
+        $this->wheres[]   = "{$column} BETWEEN ? AND ?";
+        $this->bindings[] = $min;
+        $this->bindings[] = $max;
+
+        return $this;
+    }
+
+    public function whereNull(string $column): static
+    {
+        $this->wheres[] = "{$column} IS NULL";
+
+        return $this;
+    }
+
+    public function orWhere(string $column, string $operator, mixed $value): static
+    {
+        $last = array_pop($this->wheres);
+        $this->wheres[]   = "({$last} OR {$column} {$operator} ?)";
+        $this->bindings[] = $value;
+
+        return $this;
+    }
+
     private function buildOrderByClause(): string
     {
         if (empty($this->orderByClauses)) {

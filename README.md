@@ -2,10 +2,7 @@
 
 ## TODOs
 
-- [ ] Adicionar ordenação
-- [ ] Adicionar filtros
 - [ ] Formatar date/datetime no e datepicker
-- [ ] Ajustar tamanho da modal ao conteúdo
 - [ ] Handle modal when fetch link is null
 - [ ] Validação de inputs (ex: nota fora do range dispara PDOException)
 - [ ] Disparar e tratar exceção quando valor do form está vazio

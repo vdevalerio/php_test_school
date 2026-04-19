@@ -52,6 +52,8 @@ if ($grouped) {
         'pagination' => $pagination,
         'sort'       => $sort,
         'direction'  => $direction,
+        'filters'    => $filters,
+        'filterFields' => $filterFields,
     ]);
 } else {
     $rows = array_map(function ($nota) {
@@ -80,6 +82,8 @@ if ($grouped) {
         'pagination' => $pagination,
         'sort'       => $sort,
         'direction'  => $direction,
+        'filters'    => $filters,
+        'filterFields' => $filterFields,
     ]);
 }
 ?>

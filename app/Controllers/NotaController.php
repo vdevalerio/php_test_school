@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Response;
 use App\Models\Nota;
+use App\Models\Turma;
 
 class NotaController
 {
@@ -15,15 +16,17 @@ class NotaController
         $sort           = $_GET['sort'] ?? 'aluno_id';
         $direction      = $_GET['direction'] ?? 'asc';
 
+        $filters = [
+            'turma_id'               => $_GET['turma_id'] ?? '',
+            'data_lancamento_inicio' => $_GET['data_lancamento_inicio'] ?? '',
+            'data_lancamento_fim'    => $_GET['data_lancamento_fim'] ?? '',
+            'media_min'              => $_GET['media_min'] ?? '',
+            'media_max'              => $_GET['media_max'] ?? '',
+        ];
+
         $allowedSorts = [
-            'id',
-            'aluno_id',
-            'aluno_nome',
-            'turma_nome',
-            'disciplina',
-            'nota',
-            'media_aluno',
-            'data_lancamento',
+            'id', 'aluno_id', 'aluno_nome', 'turma_nome',
+            'disciplina', 'nota', 'media_aluno', 'data_lancamento',
         ];
 
         if (!in_array($sort, $allowedSorts)) {
@@ -37,20 +40,56 @@ class NotaController
             AVG(notas.nota) OVER (PARTITION BY notas.aluno_id) AS media_aluno
         ";
 
+        $innerBuilder = Nota::query()
+            ->select($select)
+            ->leftJoin('alunos', 'notas.aluno_id', '=', 'alunos.id')
+            ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id');
+
+        if (!empty($filters['turma_id'])) {
+            $innerBuilder->where('turmas.id', '=', $filters['turma_id']);
+        }
+
+        if (!empty($filters['data_lancamento_inicio'])
+            && !empty($filters['data_lancamento_fim']))
+        {
+            $innerBuilder->whereBetween(
+                'notas.data_lancamento',
+                $filters['data_lancamento_inicio'],
+                $filters['data_lancamento_fim']
+            );
+        } elseif (!empty($filters['data_lancamento_inicio'])) {
+            $innerBuilder->where(
+                'notas.data_lancamento',
+                '>=',
+                $filters['data_lancamento_inicio']
+            );
+        } elseif (!empty($filters['data_lancamento_fim'])) {
+            $innerBuilder->where(
+                'notas.data_lancamento',
+                '<=',
+                $filters['data_lancamento_fim']
+            );
+        }
+
+        $builder = $innerBuilder->fromSubquery();
+
+        if (!empty($filters['media_min']) && !empty($filters['media_max'])) {
+            $builder->whereBetween(
+                'media_aluno',
+                $filters['media_min'],
+                $filters['media_max']
+            );
+        } elseif (!empty($filters['media_min'])) {
+            $builder->where('media_aluno', '>=', $filters['media_min']);
+        } elseif (!empty($filters['media_max'])) {
+            $builder->where('media_aluno', '<=', $filters['media_max']);
+        }
+
         $breaksGrouping = ['disciplina', 'nota', 'data_lancamento', 'id'];
         $grouped        = !in_array($sort, $breaksGrouping);
         $groupByAlunoId = $grouped && !in_array($sort, [
-            'aluno_id',
-            'aluno_nome',
-            'media_aluno',
-            'turma_nome',
+            'aluno_id', 'aluno_nome', 'media_aluno', 'turma_nome',
         ]);
-
-        $builder = Nota::query()
-            ->select($select)
-            ->leftJoin('alunos', 'notas.aluno_id', '=', 'alunos.id')
-            ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id')
-            ->fromSubquery();
 
         if ($groupByAlunoId) {
             $builder->orderBy('aluno_id', 'asc');
@@ -60,12 +99,38 @@ class NotaController
             ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 
+        $turmas = Turma::all();
+
+        $filterFields = [
+            [
+                'type'    => 'select',
+                'name'    => 'turma_id',
+                'label'   => 'Turma',
+                'options' => array_map(fn($t) => [
+                    'value' => $t->id,
+                    'label' => $t->nome,
+                ], $turmas),
+            ],
+            [
+                'type'  => 'date_range',
+                'name'  => 'data_lancamento',
+                'label' => 'Data de Lançamento',
+            ],
+            [
+                'type'  => 'number_range',
+                'name'  => 'media',
+                'label' => 'Média',
+            ],
+        ];
+
         return Response::view('notas/index', [
-            'pagination' => $pagination,
-            'sort'       => $sort,
-            'direction'  => $direction,
-            'grouped'    => $grouped,
-            'heading'    => 'Notas',
+            'pagination'   => $pagination,
+            'sort'         => $sort,
+            'direction'    => $direction,
+            'grouped'      => $grouped,
+            'filters'      => $filters,
+            'filterFields' => $filterFields,
+            'heading'      => 'Notas',
         ]);
     }
 

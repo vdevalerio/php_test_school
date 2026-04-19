@@ -3,7 +3,17 @@
 $currentSort      = $sort;
 $currentDirection = $direction;
 $query            = $_GET;
+
+$filterFields     = $filterFields ?? [];
+$filters          = $filters ?? [];
 ?>
+
+<?php if (!empty($filterFields)): ?>
+    <?php component('filter', [
+        'filterFields' => $filterFields,
+        'filters'      => $filters ?? [],
+    ]) ?>
+<?php endif; ?>
 
 <table class="data-table">
     <thead>
