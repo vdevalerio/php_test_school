@@ -27,7 +27,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Modal
-function openModal(id) 
+function openModal(id)
 {
     const modal = document.getElementById(id);
     modal.classList.add('is-open');
@@ -35,7 +35,7 @@ function openModal(id)
     document.body.style.overflow = 'hidden';
 }
 
-function closeModal(id) 
+function closeModal(id)
 {
     const modal = document.getElementById(id);
     modal.classList.remove('is-open');
@@ -49,6 +49,9 @@ document.addEventListener('click', (e) => {
     if (btn) {
         const modalId  = btn.dataset.modal;
         const fetchUrl = btn.dataset.fetchUrl;
+
+        if (!fetchUrl) return;
+
         const content  = document.querySelector(`#${modalId} .modal-content`);
 
         content.innerHTML = '<p class="modal-loading">Carregando...</p>';
@@ -56,7 +59,7 @@ document.addEventListener('click', (e) => {
 
         fetch(fetchUrl)
             .then(res => {
-                if (!res.ok) throw new Error('Erro ao carregar conteúdo');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 return res.text();
             })
             .then(html => {
@@ -64,9 +67,15 @@ document.addEventListener('click', (e) => {
                 const closeBtn = content.querySelector('[data-close-modal]')
                 if (closeBtn) closeBtn.dataset.closeModal = modalId;
             })
-            .catch(() => content.innerHTML =
-                '<p class="modal-error">Erro ao carregar.</p>'
-            );
+            .catch((err) => {
+                console.error(`modal-trigger: erro ao carregar "${fetchUrl}"`, err);
+                content.innerHTML = `
+                    <div class="modal-error">
+                        <p>Não foi possível carregar o conteúdo.</p>
+                        <button onclick="closeModal('${modalId}')">Fechar</button>
+                    </div>
+                `;
+            });
     }
 
     const overlay = e.target.closest('[data-close-modal]');

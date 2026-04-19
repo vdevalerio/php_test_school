@@ -2,8 +2,6 @@
 
 ## TODOs
 
-- [ ] Formatar date/datetime no e datepicker
-- [ ] Handle modal when fetch link is null
 - [ ] Validação de inputs (ex: nota fora do range dispara PDOException)
 - [ ] Disparar e tratar exceção quando valor do form está vazio
 - [ ] Adicionar escopo na criação de aluno/nota

@@ -2,6 +2,8 @@
 
 $modalId  = 'modal-' . $id;
 $btnId    = 'btn-' . $id;
+
+if (empty($fetchUrl)) return;
 ?>
 
 <button
@@ -9,6 +11,7 @@ $btnId    = 'btn-' . $id;
     class="btn <?= $variant ?? '' ?>"
     data-modal="<?= $modalId ?>"
     data-fetch-url="<?= $fetchUrl ?>"
+    <?= empty($fetchUrl) ? 'disabled title="URL não configurada"' : '' ?>
 >
     <?= $label ?>
 </button>

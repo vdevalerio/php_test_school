@@ -169,6 +169,20 @@ main {
     text-align: left;
 }
 
+.modal-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--text-light);
+    text-align: center;
+}
+
+.modal-error p {
+    margin: 0;
+}
+
 .close {
     position: absolute;
     top: 0.75rem;
