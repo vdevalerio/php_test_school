@@ -206,7 +206,7 @@ final class AlunoTest extends TestCase
         $id      = $this->createAluno($turmaId);
         $aluno   = Aluno::find($id);
 
-        $this->assertSame([], $aluno->notas());
+        $this->assertSame([], $aluno->notas()->get());
     }
 
     public function test_notas_returns_notas_of_this_aluno(): void
@@ -218,7 +218,7 @@ final class AlunoTest extends TestCase
 
         $aluno = Aluno::find($alunoId);
 
-        $this->assertCount(2, $aluno->notas());
+        $this->assertCount(2, $aluno->notas()->get());
     }
 
     public function test_notas_does_not_return_notas_of_other_aluno(): void
@@ -238,7 +238,7 @@ final class AlunoTest extends TestCase
 
         $aluno = Aluno::find($alunoId1);
 
-        $this->assertCount(1, $aluno->notas());
+        $this->assertCount(1, $aluno->notas()->get());
     }
 
     // -------------------------------------------------------------------------

@@ -160,7 +160,7 @@ final class TurmaTest extends TestCase
         $id    = $this->createTurma();
         $turma = Turma::find($id);
 
-        $this->assertSame([], $turma->alunos());
+        $this->assertSame([], $turma->alunos()->get());
     }
 
     public function test_alunos_returns_alunos_of_this_turma(): void
@@ -174,7 +174,7 @@ final class TurmaTest extends TestCase
 
         $turma = Turma::find($turmaId);
 
-        $this->assertCount(2, $turma->alunos());
+        $this->assertCount(2, $turma->alunos()->get());
     }
 
     public function test_alunos_does_not_return_alunos_of_other_turma(): void
@@ -190,6 +190,6 @@ final class TurmaTest extends TestCase
 
         $turma = Turma::find($turmaId1);
 
-        $this->assertCount(1, $turma->alunos());
+        $this->assertCount(1, $turma->alunos()->get());
     }
 }

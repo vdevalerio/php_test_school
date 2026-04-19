@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Core\QueryBuilder;
+
 class Aluno extends Model
 {
     protected static string $table = 'alunos';
@@ -20,20 +22,8 @@ class Aluno extends Model
         return Turma::find($this->turma_id);
     }
 
-    public function notas(): array
+    public function notas(): QueryBuilder
     {
-        $instance = new static();
-        $rows     = $instance->db->query(
-            "SELECT notas.* FROM notas WHERE notas.aluno_id = ?",
-            [$this->id]
-        )->fetchAll();
-
-        return array_map(function (array $data) {
-            $obj = new Nota();
-            foreach ($data as $key => $value) {
-                $obj->$key = $obj->castValue($key, $value);
-            }
-            return $obj;
-        }, $rows);
+        return Nota::query()->where('aluno_id', '=', $this->id);
     }
 }

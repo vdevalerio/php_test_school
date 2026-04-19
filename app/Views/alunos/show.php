@@ -9,7 +9,7 @@ include __DIR__ . '/../layout/nav.php';
  * @var Aluno $aluno
  */
 
-$notas = $aluno->notas();
+$notas = $aluno->notas()->get();
 $title = "#{$aluno->id} - {$aluno->nome} - {$aluno->turma()->nome}";
 ?>
 
