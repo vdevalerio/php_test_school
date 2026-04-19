@@ -4,6 +4,26 @@
 
 - [ ] Adicionar paginação
     - [ ] Preciso de um query builder pra adicionar paginacao na interna das models
+    - [ ] Extrair e centralizar esse codigo de criacao de "collections":
+      ```php
+      return array_map(function (array $data) {
+          $obj = new $this->modelClass();
+          foreach ($data as $key => $value) {
+              $obj->$key = $obj->castValue($key, $value);
+          }
+          return $obj;
+      }, $rows);
+      ```
+    - [ ] Refatorar sprintf para usar inteiros nos locais corretos
+    ```
+    $sql    = sprintf(
+            'SELECT * FROM %s%s LIMIT %s OFFSET %s', // Deveria ser %d para limit e offset
+            $this->table,
+            $this->buildWhereClause(),
+            $perPage,
+            $offset
+        );
+    ```
 - [ ] Adicionar ordenação
 - [ ] Adicionar filtros
 - [ ] Formatar date/datetime nas tabelas e datepicker
