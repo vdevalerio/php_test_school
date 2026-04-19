@@ -25,7 +25,7 @@ class AlunoController
         ];
 
         if (!in_array($sort, $allowedSorts)) {
-            $sort = 'id';
+            $sort = 'alunos.id';
         }
 
         $pagination = Aluno::query()

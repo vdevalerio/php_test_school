@@ -4,18 +4,48 @@ namespace App\Core;
 
 class QueryBuilder
 {
+    private Database $db;
+
     private array $wheres   = [];
     private array $bindings = [];
-    private Database $db;
-    private ?string $orderByColumn    = null;
-    private string  $orderByDirection = 'asc';
-    private array $joins = [];
+
+    private array $orderByClauses     = [];
+
+    private array $joins   = [];
+    private string $select = '*';
 
     public function __construct(
         private string $table,
         private string $modelClass
     ) {
         $this->db = Database::getInstance();
+    }
+
+    public function select(string $select): static
+    {
+        $this->select = $select;
+
+        return $this;
+    }
+
+    public function fromSubquery(string $alias = 'subquery'): static
+    {
+        $innerSql = sprintf(
+            'SELECT %s FROM %s%s%s',
+            $this->select,
+            $this->table,
+            $this->buildJoinClause(),
+            $this->buildWhereClause()
+        );
+
+        $new = new static(
+            "({$innerSql}) AS {$alias}",
+            $this->modelClass
+        );
+        $new->select   = '*';
+        $new->bindings = $this->bindings;
+
+        return $new;
     }
 
     private function buildWhereClause(): string
@@ -37,25 +67,17 @@ class QueryBuilder
 
     private function buildOrderByClause(): string
     {
-        if ($this->orderByColumn === null) {
+        if (empty($this->orderByClauses)) {
             return '';
         }
 
-        $clause = sprintf(
-            ' ORDER BY %s %s',
-            $this->orderByColumn,
-            $this->orderByDirection
-        );
-
-        return $clause;
+        return ' ORDER BY ' . implode(', ', $this->orderByClauses);
     }
 
     public function orderBy(string $column, string $direction = 'asc'): static
     {
-        $this->orderByColumn    = $column;
-        $this->orderByDirection = strtolower($direction) === 'desc'
-            ? 'desc'
-            : 'asc';
+        $direction              = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+        $this->orderByClauses[] = "{$column} {$direction}";
 
         return $this;
     }
@@ -106,8 +128,7 @@ class QueryBuilder
 
     public function get(): array
     {
-        $sql  = 'SELECT ' . $this->table . '.* FROM '
-            . $this->table
+        $sql = "SELECT {$this->select} FROM {$this->table}"
             . $this->buildJoinClause()
             . $this->buildWhereClause()
             . $this->buildOrderByClause();
@@ -138,8 +159,8 @@ class QueryBuilder
         $offset = ($page - 1) * $perPage;
         $total  = $this->count();
         $sql    = sprintf(
-            'SELECT %s.* FROM %s%s%s%s LIMIT %d OFFSET %d',
-            $this->table,
+            'SELECT %s FROM %s%s%s%s LIMIT %d OFFSET %d',
+            $this->select,
             $this->table,
             $this->buildJoinClause(),
             $this->buildWhereClause(),
@@ -147,6 +168,7 @@ class QueryBuilder
             $perPage,
             $offset
         );
+
         $rows   = $this->db->query($sql, $this->bindings)->fetchAll();
         $rows   = $this->hydrate($rows);
 

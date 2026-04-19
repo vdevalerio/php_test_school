@@ -12,25 +12,51 @@ class NotaController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $sort           = $_GET['sort'] ?? 'id';
+        $sort           = $_GET['sort'] ?? 'aluno_id';
         $direction      = $_GET['direction'] ?? 'asc';
 
-        $allowedSorts   = [
-            'notas.id',
-            'alunos.nome',
-            'turmas.nome',
-            'notas.disciplina',
-            'notas.nota',
-            'notas.data_lancamento',
+        $allowedSorts = [
+            'id',
+            'aluno_id',
+            'aluno_nome',
+            'turma_nome',
+            'disciplina',
+            'nota',
+            'media_aluno',
+            'data_lancamento',
         ];
 
         if (!in_array($sort, $allowedSorts)) {
-            $sort = 'id';
+            $sort = 'aluno_id';
         }
 
-        $pagination = Nota::query()
+        $select = "
+            notas.*,
+            alunos.nome AS aluno_nome,
+            turmas.nome AS turma_nome,
+            AVG(notas.nota) OVER (PARTITION BY notas.aluno_id) AS media_aluno
+        ";
+
+        $breaksGrouping = ['disciplina', 'nota', 'data_lancamento', 'id'];
+        $grouped        = !in_array($sort, $breaksGrouping);
+        $groupByAlunoId = $grouped && !in_array($sort, [
+            'aluno_id',
+            'aluno_nome',
+            'media_aluno',
+            'turma_nome',
+        ]);
+
+        $builder = Nota::query()
+            ->select($select)
             ->leftJoin('alunos', 'notas.aluno_id', '=', 'alunos.id')
             ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id')
+            ->fromSubquery();
+
+        if ($groupByAlunoId) {
+            $builder->orderBy('aluno_id', 'asc');
+        }
+
+        $pagination = $builder
             ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 
@@ -38,6 +64,7 @@ class NotaController
             'pagination' => $pagination,
             'sort'       => $sort,
             'direction'  => $direction,
+            'grouped'    => $grouped,
             'heading'    => 'Notas',
         ]);
     }
