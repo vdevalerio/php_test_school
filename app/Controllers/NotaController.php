@@ -12,10 +12,23 @@ class NotaController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $pagination     = Nota::paginate($page, $perPage, $perPageOptions);
+        $sort           = $_GET['sort'] ?? 'id';
+        $direction      = $_GET['direction'] ?? 'asc';
+
+        $allowedSorts   = ['id', 'aluno_id', 'disciplina', 'nota', 'data_lancamento'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $pagination = Nota::query()
+            ->orderBy($sort, $direction)
+            ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('notas/index', [
             'pagination' => $pagination,
+            'sort'       => $sort,
+            'direction'  => $direction,
             'heading'    => 'Notas',
         ]);
     }

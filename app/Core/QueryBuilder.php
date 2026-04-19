@@ -7,6 +7,8 @@ class QueryBuilder
     private array $wheres   = [];
     private array $bindings = [];
     private Database $db;
+    private ?string $orderByColumn    = null;
+    private string  $orderByDirection = 'asc';
 
     public function __construct(
         private string $table,
@@ -32,6 +34,31 @@ class QueryBuilder
         return $this;
     }
 
+    private function buildOrderByClause(): string
+    {
+        if ($this->orderByColumn === null) {
+            return '';
+        }
+
+        $clause = sprintf(
+            ' ORDER BY %s %s',
+            $this->orderByColumn,
+            $this->orderByDirection
+        );
+
+        return $clause;
+    }
+
+    public function orderBy(string $column, string $direction = 'asc'): static
+    {
+        $this->orderByColumn    = $column;
+        $this->orderByDirection = strtolower($direction) === 'desc'
+            ? 'desc'
+            : 'asc';
+
+        return $this;
+    }
+
     public function count(): int
     {
         $sql    = "SELECT COUNT(*) FROM {$this->table}";
@@ -43,7 +70,11 @@ class QueryBuilder
 
     public function get(): array
     {
-        $sql  = "SELECT * FROM {$this->table}" . $this->buildWhereClause();
+        $sql  = 'SELECT * FROM '
+            . $this->table
+            . $this->buildWhereClause()
+            . $this->buildOrderByClause();
+
         $rows = $this->db->query($sql, $this->bindings)->fetchAll();
 
         return $this->hydrate($rows);
@@ -70,9 +101,10 @@ class QueryBuilder
         $offset = ($page - 1) * $perPage;
         $total  = $this->count();
         $sql    = sprintf(
-            'SELECT * FROM %s%s LIMIT %d OFFSET %d',
+            'SELECT * FROM %s%s%s LIMIT %d OFFSET %d',
             $this->table,
             $this->buildWhereClause(),
+            $this->buildOrderByClause(),
             $perPage,
             $offset
         );

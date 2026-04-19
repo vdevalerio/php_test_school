@@ -14,10 +14,24 @@ class TurmaController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $pagination     = Turma::paginate($page, $perPage, $perPageOptions);
+        $sort           = $_GET['sort'] ?? 'id';
+        $direction      = $_GET['direction'] ?? 'asc';
+
+        $allowedSorts   = ['id', 'nome', 'ano'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $pagination = Turma::query()
+            ->orderBy($sort, $direction)
+            ->paginate($page, $perPage, $perPageOptions);
+
 
         return Response::view('turmas/index', [
             'pagination' => $pagination,
+            'sort'       => $sort,
+            'direction'  => $direction,
             'heading'    => 'Turmas',
         ]);
     }
@@ -54,13 +68,24 @@ class TurmaController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $turma          = Turma::find($id);
-        $pagination     = $turma->alunos()
+        $sort           = $_GET['sort'] ?? 'id';
+        $direction      = $_GET['direction'] ?? 'asc';
+        $allowedSorts   = ['id', 'nome', 'email', 'criado_em'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $turma      = Turma::find($id);
+        $pagination = $turma->alunos()
+            ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('turmas/show', [
             'turma'      => $turma,
             'pagination' => $pagination,
+            'sort'       => $sort,
+            'direction'  => $direction,
             'heading'    => 'Turma',
         ]);
     }

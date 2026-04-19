@@ -40,10 +40,19 @@ $rows = array_map(function($aluno) {
         ]];
 }, $pagination['data']);
 
+$columns = [
+    ['label' => '#',         'sort' => 'id'],
+    ['label' => 'Nome',      'sort' => 'nome'],
+    ['label' => 'E-mail',    'sort' => 'email'],
+    ['label' => 'Criado em', 'sort' => 'criado_em'],
+];
+
 component('table', [
-    'columns'    => ['#', 'Nome', 'E-mail', 'Criado em'],
+    'columns'    => $columns,
     'rows'       => $rows,
     'pagination' => $pagination,
+    'sort'       => $sort,
+    'direction'  => $direction,
 ]);
 ?>
 

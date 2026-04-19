@@ -25,10 +25,18 @@ $rows = array_map(function($turma) {
     ];
 }, $pagination['data']);
 
+$columns = [
+    ['label' => '#',    'sort' => 'id'],
+    ['label' => 'Nome', 'sort' => 'nome'],
+    ['label' => 'Ano',  'sort' => 'ano'],
+];
+
 component('table', [
-    'columns'    => ['#', 'Nome', 'Ano'],
+    'columns'    => $columns,
     'rows'       => $rows,
     'pagination' => $pagination,
+    'sort'       => $sort,
+    'direction'  => $direction,
 ]);
 ?>
 

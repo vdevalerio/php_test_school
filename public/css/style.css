@@ -301,7 +301,6 @@
 
 .data-table th:last-child,
 .data-table td:last-child {
-    text-align: right;
     width: 1%;
     white-space: nowrap;
 }

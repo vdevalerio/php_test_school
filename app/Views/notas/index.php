@@ -35,10 +35,24 @@ $rows = array_map(function($nota) {
     ];
 }, $pagination['data']);
 
+$columns = [
+    ['label' => '#',                  'sort' => 'id'],
+    ['label' => 'Aluno',              'sort' => 'aluno_id'],
+    ['label' => 'Turma'],
+    ['label' => 'Disciplina',         'sort' => 'disciplina'],
+    ['label' => 'Nota',               'sort' => 'nota'],
+    ['label' => 'Data de Lançamento', 'sort' => 'data_lancamento'],
+];
+
 component('table', [
-    'columns'    => [
-        '#',
-        'Aluno',
+    'columns'    => $columns,
+    'rows'       => $rows,
+    'pagination' => $pagination,
+    'sort'       => $sort,
+    'direction'  => $direction,
+]);
+?>
+
         'Turma',
         'Disciplina',
         'Nota',

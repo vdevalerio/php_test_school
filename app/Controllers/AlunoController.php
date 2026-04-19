@@ -13,10 +13,23 @@ class AlunoController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $pagination     = Aluno::paginate($page, $perPage, $perPageOptions);
+        $sort           = $_GET['sort'] ?? 'id';
+        $direction      = $_GET['direction'] ?? 'asc';
+
+        $allowedSorts   = ['id', 'nome', 'email', 'turma_id', 'criado_em'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $pagination = Aluno::query()
+            ->orderBy($sort, $direction)
+            ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('alunos/index', [
             'pagination' => $pagination,
+            'sort'       => $sort,
+            'direction'  => $direction,
             'heading'    => 'Alunos',
         ]);
     }
@@ -56,13 +69,24 @@ class AlunoController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $aluno          = Aluno::find($id);
-        $pagination     = $aluno->notas()
+        $sort           = $_GET['sort'] ?? 'id';
+        $direction      = $_GET['direction'] ?? 'asc';
+        $allowedSorts   = ['id', 'disciplina', 'nota', 'data_lancamento'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $aluno      = Aluno::find($id);
+        $pagination = $aluno->notas()
+            ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('alunos/show', [
             'aluno'      => $aluno,
             'pagination' => $pagination,
+            'sort'       => $sort,
+            'direction'  => $direction,
             'heading'    => 'Aluno',
         ]);
     }
