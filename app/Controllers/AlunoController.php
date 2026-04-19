@@ -13,16 +13,23 @@ class AlunoController
         $page           = max(1, (int) ($_GET['page'] ?? 1));
         $perPage        = (int) ($_GET['per_page'] ?? 10);
         $perPageOptions = [10, 25, 50, 100];
-        $sort           = $_GET['sort'] ?? 'id';
+        $sort           = $_GET['sort'] ?? 'alunos.id';
         $direction      = $_GET['direction'] ?? 'asc';
 
-        $allowedSorts   = ['id', 'nome', 'email', 'turma_id', 'criado_em'];
+        $allowedSorts   = [
+            'alunos.id',
+            'alunos.nome',
+            'alunos.email',
+            'turmas.nome',
+            'alunos.criado_em',
+        ];
 
         if (!in_array($sort, $allowedSorts)) {
             $sort = 'id';
         }
 
         $pagination = Aluno::query()
+            ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id')
             ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 

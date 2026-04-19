@@ -15,13 +15,22 @@ class NotaController
         $sort           = $_GET['sort'] ?? 'id';
         $direction      = $_GET['direction'] ?? 'asc';
 
-        $allowedSorts   = ['id', 'aluno_id', 'disciplina', 'nota', 'data_lancamento'];
+        $allowedSorts   = [
+            'notas.id',
+            'alunos.nome',
+            'turmas.nome',
+            'notas.disciplina',
+            'notas.nota',
+            'notas.data_lancamento',
+        ];
 
         if (!in_array($sort, $allowedSorts)) {
             $sort = 'id';
         }
 
         $pagination = Nota::query()
+            ->leftJoin('alunos', 'notas.aluno_id', '=', 'alunos.id')
+            ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id')
             ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
 

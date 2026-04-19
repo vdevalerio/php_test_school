@@ -19,7 +19,7 @@ $rows = array_map(function($aluno) {
         $aluno->id,
         $aluno->nome,
         $aluno->email,
-        $aluno->turma_id,
+        $aluno->turma()->nome,
         ['value' => $aluno->criado_em, 'format' => 'd/m/Y']
     ],
     'actions' => [
@@ -31,11 +31,11 @@ $rows = array_map(function($aluno) {
 }, $pagination['data']);
 
 $columns = [
-    ['label' => '#',         'sort' => 'id'],
-    ['label' => 'Nome',      'sort' => 'nome'],
-    ['label' => 'Email',     'sort' => 'email'],
-    ['label' => 'Turma',     'sort' => 'turma_id'],
-    ['label' => 'Criado Em', 'sort' => 'criado_em'],
+    ['label' => '#',         'sort' => 'alunos.id'],
+    ['label' => 'Nome',      'sort' => 'alunos.nome'],
+    ['label' => 'Email',     'sort' => 'alunos.email'],
+    ['label' => 'Turma',     'sort' => 'turmas.nome'],
+    ['label' => 'Criado Em', 'sort' => 'alunos.criado_em'],
 ];
 
 component('table', [

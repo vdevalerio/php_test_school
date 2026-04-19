@@ -9,6 +9,7 @@ class QueryBuilder
     private Database $db;
     private ?string $orderByColumn    = null;
     private string  $orderByDirection = 'asc';
+    private array $joins = [];
 
     public function __construct(
         private string $table,
@@ -59,10 +60,45 @@ class QueryBuilder
         return $this;
     }
 
+    private function buildJoinClause(): string
+    {
+        if (empty($this->joins)) {
+            return '';
+        }
+
+        return ' ' . implode(' ', $this->joins);
+    }
+
+    public function join(
+        string $table,
+        string $first,
+        string $operator,
+        string $second
+    ): static
+    {
+        $this->joins[] = "JOIN {$table} ON {$first} {$operator} {$second}";
+
+        return $this;
+    }
+
+    public function leftJoin(
+        string $table,
+        string $first,
+        string $operator,
+        string $second
+    ): static
+    {
+        $this->joins[] = "LEFT JOIN {$table} ON {$first} {$operator} {$second}";
+
+        return $this;
+    }
+
     public function count(): int
     {
-        $sql    = "SELECT COUNT(*) FROM {$this->table}";
-        $sql   .= $this->buildWhereClause();
+        $sql    = 'SELECT COUNT(*) FROM '
+            . $this->table
+            . $this->buildJoinClause()
+            . $this->buildWhereClause();
         $result = $this->db->query($sql, $this->bindings)->fetch();
 
         return (int) reset($result);
@@ -70,8 +106,9 @@ class QueryBuilder
 
     public function get(): array
     {
-        $sql  = 'SELECT * FROM '
+        $sql  = 'SELECT ' . $this->table . '.* FROM '
             . $this->table
+            . $this->buildJoinClause()
             . $this->buildWhereClause()
             . $this->buildOrderByClause();
 
@@ -101,8 +138,10 @@ class QueryBuilder
         $offset = ($page - 1) * $perPage;
         $total  = $this->count();
         $sql    = sprintf(
-            'SELECT * FROM %s%s%s LIMIT %d OFFSET %d',
+            'SELECT %s.* FROM %s%s%s%s LIMIT %d OFFSET %d',
             $this->table,
+            $this->table,
+            $this->buildJoinClause(),
             $this->buildWhereClause(),
             $this->buildOrderByClause(),
             $perPage,
