@@ -20,7 +20,7 @@ class NotaSeeder
         foreach ($alunos as $aluno) {
             for ($i = 1; $i <= 3; $i++) {
                 Nota::create([
-                    'aluno_id'        => $aluno['id'],
+                    'aluno_id'        => $aluno->id,
                     'disciplina'      => $disciplinas[array_rand($disciplinas)],
                     'nota'            => rand(0, 10),
                     'data_lancamento' => date('Y-m-d H:i:s'),
