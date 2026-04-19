@@ -61,7 +61,11 @@ class QueryBuilder
         }, $rows);
     }
 
-    public function paginate(int $page = 1, int $perPage = 10): array
+    public function paginate(
+        int $page = 1,
+        int $perPage = 10,
+        array $perPageOptions = [10, 25, 50, 100]
+    ): array
     {
         $offset = ($page - 1) * $perPage;
         $total  = $this->count();
@@ -76,11 +80,12 @@ class QueryBuilder
         $rows   = $this->hydrate($rows);
 
         return [
-            'data'         => $rows,
-            'total'        => $total,
-            'per_page'     => $perPage,
-            'current_page' => $page,
-            'last_page'    => (int) ceil($total / $perPage),
+            'data'             => $rows,
+            'total'            => $total,
+            'per_page'         => $perPage,
+            'per_page_options' => $perPageOptions,
+            'current_page'     => $page,
+            'last_page'        => (int) ceil($total / $perPage),
         ];
     }
 }

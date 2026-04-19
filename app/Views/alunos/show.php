@@ -38,7 +38,7 @@ $rows = array_map(function($nota) {
             'editFetchUrl' => $baseUrl . '/edit',
             'deleteUrl'    => $baseUrl,
         ]];
-}, $notas);
+}, $pagination['data']);
 
 component('table', [
     'columns'    => ['#', 'Disciplina', 'Nota', 'Data de Lançamento'],

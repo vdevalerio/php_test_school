@@ -23,7 +23,7 @@ $rows = array_map(function($turma) {
             'deleteUrl'    => $baseUrl,
         ],
     ];
-}, $turmas);
+}, $pagination['data']);
 
 component('table', [
     'columns'    => ['#', 'Nome', 'Ano'],

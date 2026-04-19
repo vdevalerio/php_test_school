@@ -9,12 +9,13 @@ class NotaController
 {
     public function index(): Response
     {
-        $page   = max(1, (int) ($_GET['page'] ?? 1));
-        $result = Nota::paginate($page, 10);
+        $page           = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage        = (int) ($_GET['per_page'] ?? 10);
+        $perPageOptions = [10, 25, 50, 100];
+        $pagination     = Nota::paginate($page, $perPage, $perPageOptions);
 
         return Response::view('notas/index', [
-            'notas'      => $result['data'],
-            'pagination' => $result,
+            'pagination' => $pagination,
             'heading'    => 'Notas',
         ]);
     }

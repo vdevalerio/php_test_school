@@ -61,18 +61,6 @@ final class NotaControllerTest extends TestCase
         $this->assertSame('notas/index', $response->getView());
     }
 
-    public function test_index_passes_notas_to_view(): void
-    {
-        $alunoId = $this->createAluno();
-        $this->createNota($alunoId);
-
-        $response = (new NotaController())->index();
-        $data     = $response->getData();
-
-        $this->assertArrayHasKey('notas', $data);
-        $this->assertCount(1, $data['notas']);
-    }
-
     public function test_index_passes_heading_to_view(): void
     {
         $response = (new NotaController())->index();
@@ -85,6 +73,21 @@ final class NotaControllerTest extends TestCase
         $response = (new NotaController())->index();
 
         $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_passes_notas_to_view(): void
+    {
+        $alunoId = $this->createAluno();
+        $this->createNota($alunoId);
+
+        $response = (new NotaController())->index();
+        $response = $response->getData();
+        $data     = $response['pagination']['data'];
+        $nota     = $data[0];
+
+        $this->assertArrayHasKey('pagination', $response);
+        $this->assertCount(1, $data);
+        $this->assertInstanceOf(Nota::class, $nota);
     }
 
     public function test_index_defaults_to_page_1(): void
@@ -126,7 +129,7 @@ final class NotaControllerTest extends TestCase
 
         $response = (new NotaController())->index();
 
-        $this->assertCount(5, $response->getData()['notas']);
+        $this->assertCount(5, $response->getData()['pagination']['data']);
     }
 
     // -------------------------------------------------------------------------

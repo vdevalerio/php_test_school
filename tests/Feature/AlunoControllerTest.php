@@ -64,18 +64,6 @@ final class AlunoControllerTest extends TestCase
         $this->assertSame('alunos/index', $response->getView());
     }
 
-    public function test_index_passes_alunos_to_view(): void
-    {
-        $turmaId = $this->createTurma();
-        $this->createAluno($turmaId);
-
-        $response = (new AlunoController())->index();
-        $data     = $response->getData();
-
-        $this->assertArrayHasKey('alunos', $data);
-        $this->assertCount(1, $data['alunos']);
-    }
-
     public function test_index_passes_heading_to_view(): void
     {
         $response = (new AlunoController())->index();
@@ -88,6 +76,21 @@ final class AlunoControllerTest extends TestCase
         $response = (new AlunoController())->index();
 
         $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_passes_alunos_to_view(): void
+    {
+        $turmaId = $this->createTurma();
+        $this->createAluno($turmaId);
+
+        $response = (new AlunoController())->index();
+        $response = $response->getData();
+        $data     = $response['pagination']['data'];
+        $aluno    = $data[0];
+
+        $this->assertArrayHasKey('pagination', $response);
+        $this->assertCount(1, $data);
+        $this->assertInstanceOf(Aluno::class, $aluno);
     }
 
     public function test_index_pagination_has_required_keys(): void
@@ -146,8 +149,10 @@ final class AlunoControllerTest extends TestCase
         $_GET['page'] = 2;
 
         $response = (new AlunoController())->index();
+        $response = $response->getData();
+        $data     = $response['pagination']['data'];
 
-        $this->assertCount(5, $response->getData()['alunos']);
+        $this->assertCount(5, $data);
     }
 
     // -------------------------------------------------------------------------

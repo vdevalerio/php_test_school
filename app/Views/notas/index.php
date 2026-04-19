@@ -33,7 +33,7 @@ $rows = array_map(function($nota) {
             'deleteUrl'    => $baseUrl,
         ]
     ];
-}, $notas);
+}, $pagination['data']);
 
 component('table', [
     'columns'    => [

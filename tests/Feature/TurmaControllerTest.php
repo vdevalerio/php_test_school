@@ -66,17 +66,6 @@ final class TurmaControllerTest extends TestCase
         $this->assertSame('turmas/index', $response->getView());
     }
 
-    public function test_index_passes_turmas_to_view(): void
-    {
-        $this->createTurma();
-
-        $response = (new TurmaController())->index();
-        $data     = $response->getData();
-
-        $this->assertArrayHasKey('turmas', $data);
-        $this->assertCount(1, $data['turmas']);
-    }
-
     public function test_index_passes_heading_to_view(): void
     {
         $response = (new TurmaController())->index();
@@ -89,6 +78,20 @@ final class TurmaControllerTest extends TestCase
         $response = (new TurmaController())->index();
 
         $this->assertArrayHasKey('pagination', $response->getData());
+    }
+
+    public function test_index_passes_turmas_to_view(): void
+    {
+        $this->createTurma();
+
+        $response   = (new TurmaController())->index();
+        $response   = $response->getData();
+        $data       = $response['pagination']['data'];
+        $turma      = $data[0];
+
+        $this->assertArrayHasKey('pagination', $response);
+        $this->assertCount(1, $data);
+        $this->assertInstanceOf(Turma::class, $turma);
     }
 
     public function test_index_defaults_to_page_1(): void
@@ -128,7 +131,7 @@ final class TurmaControllerTest extends TestCase
 
         $response = (new TurmaController())->index();
 
-        $this->assertCount(5, $response->getData()['turmas']);
+        $this->assertCount(5, $response->getData()['pagination']['data']);
     }
 
     // -------------------------------------------------------------------------

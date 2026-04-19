@@ -10,12 +10,13 @@ class AlunoController
 {
     public function index(): Response
     {
-        $page   = max(1, (int) ($_GET['page'] ?? 1));
-        $result = Aluno::paginate($page, 10);
+        $page           = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage        = (int) ($_GET['per_page'] ?? 10);
+        $perPageOptions = [10, 25, 50, 100];
+        $pagination     = Aluno::paginate($page, $perPage, $perPageOptions);
 
         return Response::view('alunos/index', [
-            'alunos'     => $result['data'],
-            'pagination' => $result,
+            'pagination' => $pagination,
             'heading'    => 'Alunos',
         ]);
     }
@@ -52,15 +53,17 @@ class AlunoController
 
     public function show($id): Response
     {
-        $page   = max(1, (int) ($_GET['page'] ?? 1));
-        $aluno  = Aluno::find($id);
-        $notas  = $aluno->notas()->paginate($page, 10);
+        $page           = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage        = (int) ($_GET['per_page'] ?? 10);
+        $perPageOptions = [10, 25, 50, 100];
+        $aluno          = Aluno::find($id);
+        $pagination     = $aluno->notas()
+            ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('alunos/show', [
             'aluno'      => $aluno,
-            'notas'      => $notas['data'],
-            'pagination' => $notas,
-            'heading' => 'Aluno',
+            'pagination' => $pagination,
+            'heading'    => 'Aluno',
         ]);
     }
 

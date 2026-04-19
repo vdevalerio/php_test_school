@@ -11,12 +11,13 @@ class TurmaController
 {
     public function index(): Response
     {
-        $page   = max(1, (int) ($_GET['page'] ?? 1));
-        $result = Turma::paginate($page, 10);
+        $page           = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage        = (int) ($_GET['per_page'] ?? 10);
+        $perPageOptions = [10, 25, 50, 100];
+        $pagination     = Turma::paginate($page, $perPage, $perPageOptions);
 
         return Response::view('turmas/index', [
-            'turmas'     => $result['data'],
-            'pagination' => $result,
+            'pagination' => $pagination,
             'heading'    => 'Turmas',
         ]);
     }
@@ -50,14 +51,16 @@ class TurmaController
 
     public function show($id): Response
     {
-        $page   = max(1, (int) ($_GET['page'] ?? 1));
-        $turma  = Turma::find($id);
-        $alunos = $turma->alunos()->paginate($page, 10);
+        $page           = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage        = (int) ($_GET['per_page'] ?? 10);
+        $perPageOptions = [10, 25, 50, 100];
+        $turma          = Turma::find($id);
+        $pagination     = $turma->alunos()
+            ->paginate($page, $perPage, $perPageOptions);
 
         return Response::view('turmas/show', [
             'turma'      => $turma,
-            'alunos'     => $alunos['data'],
-            'pagination' => $alunos,
+            'pagination' => $pagination,
             'heading'    => 'Turma',
         ]);
     }

@@ -61,9 +61,13 @@ abstract class Model
         return static::query()->count();
     }
 
-    public static function paginate(int $page = 1, int $perPage = 10): array
+    public static function paginate(
+        int $page = 1,
+        int $perPage = 10,
+        array $perPageOptions = [10, 25, 50, 100]
+    ): array
     {
-        return static::query()->paginate($page, $perPage);
+        return static::query()->paginate($page, $perPage, $perPageOptions);
     }
 
     public static function find(int $id): static|false

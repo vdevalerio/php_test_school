@@ -28,7 +28,7 @@ $rows = array_map(function($aluno) {
         'editFetchUrl' => $baseUrl . '/edit',
         'deleteUrl'    => $baseUrl,
     ]];
-}, $alunos);
+}, $pagination['data']);
 
 component('table', [
     'columns'    => ['#', 'Nome', 'Email', 'Turma', 'Criado Em'],

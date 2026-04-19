@@ -121,11 +121,12 @@ final class QueryBuilderTest extends TestCase
         $builder = $this->make();
         $result = $builder->paginate();
 
-        $this->assertArrayHasKey('data',         $result);
-        $this->assertArrayHasKey('total',        $result);
-        $this->assertArrayHasKey('per_page',     $result);
-        $this->assertArrayHasKey('current_page', $result);
-        $this->assertArrayHasKey('last_page',    $result);
+        $this->assertArrayHasKey('data',             $result);
+        $this->assertArrayHasKey('total',            $result);
+        $this->assertArrayHasKey('per_page',         $result);
+        $this->assertArrayHasKey('per_page_options', $result);
+        $this->assertArrayHasKey('current_page',     $result);
+        $this->assertArrayHasKey('last_page',        $result);
     }
 
     public function test_paginate_data_contains_model_instances(): void
