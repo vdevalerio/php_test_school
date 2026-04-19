@@ -12,11 +12,15 @@ class AlunoSeeder
         $turmas = Turma::all();
         foreach ($turmas as $turma) {
             for ($i = 1; $i <= 30; $i++) {
+                $randomTimestamp  = rand(
+                    strtotime('2020-01-01'),
+                    strtotime('2024-12-31')
+                );
                 Aluno::create([
                     'nome'      => 'Aluno ' . str_pad($i, 2, '0', STR_PAD_LEFT),
                     'email'     => 'aluno' . $i . '@example.com',
                     'turma_id'  => $turma->id,
-                    'criado_em' => date('Y-m-d H:i:s'),
+                    'criado_em' => date('Y-m-d H:i:s', $randomTimestamp),
                 ]);
             }
         }
