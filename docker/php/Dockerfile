@@ -3,8 +3,13 @@ FROM php:8.2-fpm
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip \
     libpng-dev libjpeg-dev libfreetype6-dev \
+    curl xfonts-75dpi xfonts-base \
+    libfontconfig1 libx11-6 libxext6 libxrender1 \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+    && docker-php-ext-install pdo pdo_mysql zip gd \
+    && curl -fsSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb -o /tmp/wkhtmltox.deb \
+    && apt-get install -y /tmp/wkhtmltox.deb \
+    && rm /tmp/wkhtmltox.deb
 
 # Xdebug for coverage
 RUN pecl install xdebug && docker-php-ext-enable xdebug

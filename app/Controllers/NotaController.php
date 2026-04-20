@@ -9,6 +9,9 @@ use App\Core\Validator;
 use App\Exceptions\DatabaseException;
 use App\Models\Nota;
 use App\Models\Turma;
+use App\Exports\NotasDocxExport;
+use App\Exports\NotasExcelExport;
+use App\Exports\NotasPdfExport;
 
 class NotaController
 {
@@ -149,6 +152,30 @@ class NotaController
         return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
+    public function exportPdf(): void
+    {
+        $params = $this->indexParams();
+        $notas  = $this->notasForExport($params);
+
+        (new NotasPdfExport())->download($notas);
+    }
+
+    public function exportDocx(): void
+    {
+        $params = $this->indexParams();
+        $notas  = $this->notasForExport($params);
+
+        (new NotasDocxExport())->download($notas);
+    }
+
+    public function exportExcel(): void
+    {
+        $params = $this->indexParams();
+        $notas  = $this->notasForExport($params);
+
+        (new NotasExcelExport())->download($notas);
+    }
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
@@ -272,6 +299,17 @@ class NotaController
         } elseif (!empty($filters['media_max'])) {
             $builder->where('media_aluno', '<=', $filters['media_max']);
         }
+    }
+
+    private function notasForExport(array $params): array
+    {
+        return $this->buildQuery([
+            'sort'           => 'aluno_nome',
+            'direction'      => 'asc',
+            'grouped'        => true,
+            'groupByAlunoId' => false,
+            'filters'        => $params['filters'],
+        ])->get();
     }
 
     private function filterFields(): array

@@ -6,6 +6,24 @@ include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/nav.php';
 include __DIR__ . '/../layout/banner.php';
 
+component('export-buttons', [
+    'basePath' => '/notas/relatorio',
+    'query'    => http_build_query(array_filter([
+        'sort'                   => $sort,
+        'direction'              => $direction,
+        'turma_id'               => $filters['turma_id'] ?? '',
+        'data_lancamento_inicio' => $filters['data_lancamento_inicio'] ?? '',
+        'data_lancamento_fim'    => $filters['data_lancamento_fim'] ?? '',
+        'media_min'              => $filters['media_min'] ?? '',
+        'media_max'              => $filters['media_max'] ?? '',
+    ])),
+    'exports' => [
+        ['format' => 'pdf',   'label' => 'PDF'],
+        ['format' => 'docx',  'label' => 'DOCX'],
+        ['format' => 'excel', 'label' => 'Excel'],
+    ],
+]);
+
 component('modal-trigger', [
     'id'              => 'criarNota',
     'label'           => 'Criar Nota',

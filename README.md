@@ -1,12 +1,5 @@
 # Technical Test PHP - School
 
-## TODOs
-
-- [ ] Adicionar escopo na criação de aluno/nota
-    - Dentro de uma turma: pré-selecionar turma/aluno corrente
-    - A partir do menu externo: usar placeholder "Selecionar" em vez do primeiro registro
-
----
 
 ### Nullsafe operator no form compartilhado
 
