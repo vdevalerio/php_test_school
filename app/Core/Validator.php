@@ -40,6 +40,7 @@ class Validator
             'integer'  => $this->checkInteger($field, $value),
             'numeric'  => $this->checkNumeric($field, $value),
             'email'    => $this->checkEmail($field, $value),
+            'unique'   => $this->checkUnique($field, $value, $param),
             'min'      => $this->checkMin($field, $value, (float) $param),
             'max'      => $this->checkMax($field, $value, (float) $param),
             'min_len'  => $this->checkMinLen($field, $value, (int) $param),
@@ -98,6 +99,29 @@ class Validator
             && filter_var($value, FILTER_VALIDATE_EMAIL) === false
         ) {
             $this->errors[$field] = "O campo {$field} deve ser um e-mail válido.";
+        }
+    }
+
+    private function checkUnique(string $field, mixed $value, ?string $param): void
+    {
+        if (empty($value) || $param === null) return;
+
+        [$tableColumn, $ignoreId] = array_pad(explode(':', $param, 2), 2, null);
+        [$table, $column]         = explode('.', $tableColumn, 2);
+
+        $db    = Database::getInstance();
+        $sql   = "SELECT COUNT(*) FROM {$table} WHERE {$column} = ?";
+        $binds = [$value];
+
+        if ($ignoreId !== null) {
+            $sql    .= ' AND id != ?';
+            $binds[] = $ignoreId;
+        }
+
+        $count = (int) $db->query($sql, $binds)->fetchColumn();
+
+        if ($count > 0) {
+            $this->errors[$field] = "O valor informado para {$field} já está em uso.";
         }
     }
 

@@ -65,7 +65,7 @@ class AlunoController
         $validator = new Validator();
         if (!$validator->validate($_POST, [
             'nome'     => 'required|string|min_len:2|max_len:100',
-            'email'    => 'required|email|max_len:150',
+            'email'    => 'required|email|max_len:150|unique:alunos.email',
             'turma_id' => 'required|integer',
         ])) {
             return Response::redirect('/alunos?error='
@@ -164,7 +164,7 @@ class AlunoController
         $validator = new Validator();
         if (!$validator->validate($_POST, [
             'nome'     => 'required|string|min_len:2|max_len:100',
-            'email'    => 'required|email|max_len:150',
+            'email'    => "required|email|max_len:150|unique:alunos.email:{$id}",
             'turma_id' => 'required|integer',
         ])) {
             return Response::redirect(
