@@ -1,25 +1,55 @@
-# Technical Test PHP - School
+# Teste Técnico PHP - School
 
+## Executando com Docker
 
-### Nullsafe operator no form compartilhado
+### Pré-requisitos
 
-No `create`, `$nota` não é definida — acessar `$nota->aluno_id` estoura mesmo com `??`, pois `??` protege contra propriedade inexistente, não contra acesso em `null`.
+- [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/) instalados.
 
-Definir explicitamente na controller:
+### Configuração
 
-```php
-public function create(): void
-{
-    $nota        = null; // ✅
-    $action      = '/notas';
-    $method      = 'POST';
-    $submitLabel = 'Criar';
-    require '../app/Views/notas/form.php';
-}
+1. Copie o arquivo de variáveis de ambiente:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Suba os containers:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+   Isso inicia três serviços:
+   - `school_app` — Aplicação PHP 8.2-FPM
+   - `school_nginx` — Servidor Nginx (disponível na porta `APP_PORT`, padrão `8080`)
+   - `school_db` — MySQL 8.0 (disponível na porta `DB_PORT_EXTERNAL`, padrão `3307`)
+
+   O schema do banco é inicializado automaticamente na primeira execução via `sql/01_schema.sql`.
+
+3. A API estará disponível em `http://localhost:8080`.
+
+### Popular o banco de dados (Seed)
+
+Para popular o banco com dados de exemplo:
+
+```bash
+docker compose exec app php database/seed.php
 ```
 
-E no template usar nullsafe:
+Para limpar as tabelas antes de popular (fresh seed):
 
-```php
-$selected = $alunoItem['id'] == ($nota?->aluno_id ?? null) ? 'selected' : '';
+```bash
+docker compose exec app php database/seed.php --fresh
 ```
+
+### Parar os containers
+
+```bash
+docker compose down
+```
+
+Para remover também o volume do banco de dados:
+
+```bash
+docker compose down -v
