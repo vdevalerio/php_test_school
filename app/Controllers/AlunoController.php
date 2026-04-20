@@ -37,6 +37,7 @@ class AlunoController
         }
 
         $pagination = Aluno::query()
+            ->select('alunos.*', 'turmas.nome as turma_nome')
             ->leftJoin('turmas', 'alunos.turma_id', '=', 'turmas.id')
             ->orderBy($sort, $direction)
             ->paginate($page, $perPage, $perPageOptions);
