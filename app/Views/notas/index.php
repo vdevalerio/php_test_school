@@ -1,14 +1,18 @@
 <?php
 
+use App\Models\Aluno;
+
 include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/nav.php';
 include __DIR__ . '/../layout/banner.php';
 
 component('modal-trigger', [
-    'id'       => 'criarNota',
-    'label'    => 'Criar Nota',
-    'variant'  => 'primary',
-    'fetchUrl' => '/notas/create',
+    'id'              => 'criarNota',
+    'label'           => 'Criar Nota',
+    'variant'         => 'primary',
+    'fetchUrl'        => '/notas/create',
+    'disabled'        => Aluno::count() === 0,
+    'disabledMessage' => 'Cadastre um aluno antes de criar notas',
 ]);
 
 $columns = [

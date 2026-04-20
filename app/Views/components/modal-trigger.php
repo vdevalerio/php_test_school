@@ -6,6 +6,17 @@ $btnId    = 'btn-' . $id;
 if (empty($fetchUrl)) return;
 ?>
 
+<?php if (isset($disabled) && $disabled): ?>
+    <span
+        class="btn <?= $variant ?? '' ?>"
+        title="<?= htmlspecialchars($disabledMessage ?? 'Não disponível') ?>"
+        style="opacity: 0.5; cursor: not-allowed; margin-bottom: 10px;"
+    >
+        <?= $disabledMessage ?>
+    </span>
+<?php return; ?>
+<?php endif; ?>
+
 <button
     id="<?= $btnId ?>"
     class="btn <?= $variant ?? '' ?>"

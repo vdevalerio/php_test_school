@@ -1,14 +1,18 @@
 <?php
 
+use App\Models\Turma;
+
 include __DIR__ . '/../layout/header.php';
 include __DIR__ . '/../layout/nav.php';
 include __DIR__ . '/../layout/banner.php';
 
 component('modal-trigger', [
-    'id'       => 'criarAluno',
-    'label'    => 'Criar Aluno',
-    'variant'  => 'primary',
-    'fetchUrl' => '/alunos/create',
+    'id'              => 'criarAluno',
+    'label'           => 'Criar Aluno',
+    'variant'         => 'primary',
+    'fetchUrl'        => '/alunos/create',
+    'disabled'        => Turma::count() === 0,
+    'disabledMessage' => 'Cadastre uma turma antes de criar alunos',
 ]);
 
 $rows = array_map(function($aluno) {
