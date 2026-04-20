@@ -2,8 +2,6 @@
 
 ## TODOs
 
-- [ ] Validação de inputs (ex: nota fora do range dispara PDOException)
-- [ ] Disparar e tratar exceção quando valor do form está vazio
 - [ ] Adicionar escopo na criação de aluno/nota
     - Dentro de uma turma: pré-selecionar turma/aluno corrente
     - A partir do menu externo: usar placeholder "Selecionar" em vez do primeiro registro
