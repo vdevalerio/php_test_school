@@ -117,11 +117,10 @@ class Router
         }
     }
 
-    private function abort(int $code = 404): void
+    private function abort(int $code = 404): Response
     {
         http_response_code($code);
-        require __DIR__ . "/../../app/Views/{$code}.view.php";
-        $this->terminate();
+        return Response::view('errors/404', [])->send();
     }
 
     protected function terminate(): never
