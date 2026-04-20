@@ -3,6 +3,9 @@
 namespace App\Controllers;
 
 use App\Core\Response;
+use App\Core\Sanitizer;
+use App\Core\Validator;
+use App\Exceptions\DatabaseException;
 use App\Models\Nota;
 use App\Models\Turma;
 
@@ -16,22 +19,37 @@ class NotaController
         $sort           = $_GET['sort'] ?? 'aluno_id';
         $direction      = $_GET['direction'] ?? 'asc';
 
-        $filters = [
-            'turma_id'               => $_GET['turma_id'] ?? '',
-            'data_lancamento_inicio' => $_GET['data_lancamento_inicio'] ?? '',
-            'data_lancamento_fim'    => $_GET['data_lancamento_fim'] ?? '',
-            'media_min'              => $_GET['media_min'] ?? '',
-            'media_max'              => $_GET['media_max'] ?? '',
-        ];
-
         $allowedSorts = [
             'id', 'aluno_id', 'aluno_nome', 'turma_nome',
             'disciplina', 'nota', 'media_aluno', 'data_lancamento',
         ];
+        $allowedDirs = ['asc', 'desc'];
 
         if (!in_array($sort, $allowedSorts)) {
             $sort = 'aluno_id';
         }
+
+        if (!in_array($direction, $allowedDirs)) {
+            $direction = 'asc';
+        }
+
+        $filters = [
+            'turma_id'               => filter_var(
+                $_GET['turma_id'] ?? '', FILTER_VALIDATE_INT
+            ) ?: '',
+            'data_lancamento_inicio' => Sanitizer::date(
+                $_GET['data_lancamento_inicio'] ?? ''
+            ) ?? '',
+            'data_lancamento_fim'    => Sanitizer::date(
+                $_GET['data_lancamento_fim'] ?? ''
+            ) ?? '',
+            'media_min'              => is_numeric(
+                $_GET['media_min'] ?? ''
+            ) ? (string) (float) $_GET['media_min'] : '',
+            'media_max'              => is_numeric(
+                $_GET['media_max'] ?? ''
+            ) ? (string) (float) $_GET['media_max'] : '',
+        ];
 
         $select = "
             notas.*,
@@ -146,59 +164,107 @@ class NotaController
 
     public function store(): Response
     {
-        $aluno_id        = trim($_POST['aluno_id'] ?? '');
-        $disciplina      = trim($_POST['disciplina'] ?? '');
-        $nota            = trim($_POST['nota'] ?? '');
-        $data_lancamento = trim($_POST['data_lancamento'] ?? '');
-
-        if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            return Response::redirect('/notas?error=campos_obrigatorios');
+        $validator = new Validator();
+        if (!$validator->validate($_POST, [
+            'aluno_id'        => 'required|integer',
+            'disciplina'      => 'required|string|min_len:2|max_len:100',
+            'nota'            => 'required|numeric|min:0|max:10',
+            'data_lancamento' => 'date:Y-m-d',
+        ])) {
+            return Response::redirect(
+                '/notas?error=' . urlencode($validator->firstError())
+            );
         }
 
-        Nota::create([
-            'aluno_id'        => $aluno_id,
-            'disciplina'      => $disciplina,
-            'nota'            => $nota,
-            'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
-        ]);
+        try {
+            Nota::create([
+                'aluno_id'        => Sanitizer::int($_POST['aluno_id']),
+                'disciplina'      => Sanitizer::string($_POST['disciplina']),
+                'nota'            => Sanitizer::float($_POST['nota']),
+                'data_lancamento' => Sanitizer::date(
+                    $_POST['data_lancamento']
+                ) ?? date('Y-m-d'),
+            ]);
+        } catch (\PDOException $e) {
+            throw DatabaseException::fromPDO($e);
+        }
 
         return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
-    public function edit($id): Response
+    public function edit(string $id): Response
     {
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if ($id === false || $id < 1) {
+            http_response_code(404);
+            return Response::view('errors/404', []);
+        }
+
+        $nota = Nota::find($id);
+        if (!$nota) {
+            http_response_code(404);
+            return Response::view('errors/404', []);
+        }
+
         return Response::view('notas/_form', [
-            'nota'        => Nota::find($id),
+            'nota'        => $nota,
             'action'      => "/notas/$id",
             'method'      => 'PUT',
             'submitLabel' => 'Atualizar nota',
         ]);
     }
 
-    public function update($id): Response
+    public function update(string $id): Response
     {
-        $aluno_id        = trim($_POST['aluno_id'] ?? '');
-        $disciplina      = trim($_POST['disciplina'] ?? '');
-        $nota            = trim($_POST['nota'] ?? '');
-        $data_lancamento = trim($_POST['data_lancamento'] ?? '');
-
-        if (empty($aluno_id) || empty($disciplina) || empty($nota)) {
-            return Response::redirect('/notas?error=campos_obrigatorios');
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if ($id === false || $id < 1) {
+            return Response::redirect(
+                '/notas?error=' . urlencode('ID inválido.')
+            );
         }
 
-        Nota::update($id, [
-            'aluno_id'        => $aluno_id,
-            'disciplina'      => $disciplina,
-            'nota'            => $nota,
-            'data_lancamento' => $data_lancamento ?: date('Y-m-d'),
-        ]);
+        $validator = new Validator();
+        if (!$validator->validate($_POST, [
+            'aluno_id'        => 'required|integer',
+            'disciplina'      => 'required|string|min_len:2|max_len:100',
+            'nota'            => 'required|numeric|min:0|max:10',
+            'data_lancamento' => 'date:Y-m-d',
+        ])) {
+            return Response::redirect(
+                '/notas?error=' . urlencode($validator->firstError())
+            );
+        }
+
+        try {
+            Nota::update($id, [
+                'aluno_id'        => Sanitizer::int($_POST['aluno_id']),
+                'disciplina'      => Sanitizer::string($_POST['disciplina']),
+                'nota'            => Sanitizer::float($_POST['nota']),
+                'data_lancamento' => Sanitizer::date(
+                    $_POST['data_lancamento']
+                ) ?? date('Y-m-d'),
+            ]);
+        } catch (\PDOException $e) {
+            throw DatabaseException::fromPDO($e);
+        }
 
         return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
 
-    public function destroy($id): Response
+    public function destroy(string $id): Response
     {
-        Nota::delete($id);
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if ($id === false || $id < 1) {
+            return Response::redirect(
+                '/notas?error=' . urlencode('ID inválido.')
+            );
+        }
+
+        try {
+            Nota::delete($id);
+        } catch (\PDOException $e) {
+            throw DatabaseException::fromPDO($e);
+        }
 
         return Response::redirect($_SERVER['HTTP_REFERER'] ?? '/notas');
     }
