@@ -27,7 +27,13 @@
 
    O schema do banco é inicializado automaticamente na primeira execução via `sql/01_schema.sql`.
 
-3. A API estará disponível em `http://localhost:8080`.
+3. Instale as dependências do Composer:
+
+   ```bash
+   docker compose exec app composer install
+   ```
+
+4. A API estará disponível em `http://localhost:8080`.
 
 ### Popular o banco de dados (Seed)
 
